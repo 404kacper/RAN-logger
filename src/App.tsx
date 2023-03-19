@@ -1,38 +1,30 @@
-import React, {useState} from 'react';
+import React from 'react';
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+
+import Home from './components/pages/Home';
+import NotFound from './components/pages/NotFound';
+
+import LogsState from './context/logs/LogsState';
 
 import "bootstrap/dist/css/bootstrap.min.css"
-import {Button, Modal} from "react-bootstrap"
+import './App.css';
 
-import { TestComponent } from './components/layout/TestComponent';
-
-const MyAppComponent: React.FC = () => {
-  const [showModal, setShowModal] = useState(false);
-
-  const handleShowModal = () => setShowModal(true);
-  const handleCloseModal = () => setShowModal(false);
-
+const App: React.FC = () => {
   return (
-    <div>
-      <TestComponent></TestComponent>
-      <Button onClick={handleShowModal}>Open Modal</Button>
-
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Modal Title</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Modal Body</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleCloseModal}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
+  <LogsState>
+    <Router>
+      <div className='App'>
+        <div className="container">
+          <Routes>
+            <Route path='/' element={<Home/>}/>
+            <Route path='*' element={<NotFound/>}/>
+          </Routes>
+        </div>
+      </div>
+    </Router>
+  </LogsState>
   );
 };
 
-export default MyAppComponent;
+export default App;
 
