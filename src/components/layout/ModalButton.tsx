@@ -19,7 +19,7 @@ const ModalButton: React.FC = () => {
 
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Nagłówek powiadomienia</Modal.Title>
+          <Modal.Title>Tekst z global state</Modal.Title>
         </Modal.Header>
         {/* Here the value updated by InputForm is being actually used with Context API */}
         <Modal.Body>{logsContext.user}</Modal.Body>

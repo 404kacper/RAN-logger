@@ -2,8 +2,8 @@ import {
   UPDATE_USER
 } from '../types';
 
-import {State} from "./StateInterface";
-import {Action} from "./ActionInterface";
+import {State} from "./interfaces/StateInterface";
+import {Action} from "./interfaces/ActionInterface";
 
 const logsReducer = (state: State, action: Action) => {
   switch (action.type) {
