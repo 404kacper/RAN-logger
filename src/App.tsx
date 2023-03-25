@@ -13,6 +13,7 @@ const App: React.FC = () => {
   return (
   <LogsState>
     <Router>
+      {/* App and container classes there to be stylized */}
       <div className='App'>
         <div className="container">
           <Routes>

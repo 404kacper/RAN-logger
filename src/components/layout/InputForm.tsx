@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useContext, useState, useEffect} from 'react';
+import React, {ChangeEvent, useContext, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import LogsContext from '../../context/logs/logsContext';
 
