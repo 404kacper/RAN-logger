@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Form, Alert } from 'react-bootstrap';
+import { Row, Col, Form, Alert } from 'react-bootstrap';
 import { useDropzone, DropzoneRootProps, DropzoneInputProps } from 'react-dropzone';
 
 const DropzoneComponent: React.FC = () => {
@@ -128,7 +128,7 @@ const DropzoneComponent: React.FC = () => {
   } = useDropzone({ onDrop: handleDrop });
 
   return (
-    <Container>
+    <div>
       <Row>
         <Col>
           <div {...getRootProps()} className="dropzone mt-5">
@@ -146,7 +146,7 @@ const DropzoneComponent: React.FC = () => {
               {files.map((file) => (
                 <div key={file.name} className="mb-2">
                   <span>{file.name}</span>
-                  <button onClick={() => handleDelete(file)}>Usuń</button>
+                  <button onClick={() => handleDelete(file)} className="m-2">Usuń</button>
                 </div>
               ))}
             </Form.Group>
@@ -160,7 +160,7 @@ const DropzoneComponent: React.FC = () => {
           </Form.Group>
         </Col>
       </Row>
-    </Container>
+    </div>
   );
 }
 

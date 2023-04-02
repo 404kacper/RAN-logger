@@ -1,5 +1,6 @@
 import React from 'react';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import { Container } from 'react-bootstrap';
 
 import Home from './components/pages/Home';
 import NotFound from './components/pages/NotFound';
@@ -14,14 +15,12 @@ const App: React.FC = () => {
   <LogsState>
     <Router>
       {/* App and container classes there to be stylized */}
-      <div className='App'>
-        <div className="container">
+      <Container fluid className='App'>
           <Routes>
             <Route path='/' element={<Home/>}/>
             <Route path='*' element={<NotFound/>}/>
           </Routes>
-        </div>
-      </div>
+      </Container>
     </Router>
   </LogsState>
   );

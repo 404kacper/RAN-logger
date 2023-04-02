@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useContext, useState } from 'react';
+import React, {Fragment, ChangeEvent, useContext, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import LogsContext from '../../context/logs/logsContext';
 
@@ -18,7 +18,7 @@ const InputForm: React.FC = () => {
   }
 
   return (
-    <div>
+    <Fragment>
       <Form.Label className='mt-5'>Testowe pole tekstowe:</Form.Label>
       <Form.Control type="text" onChange={onChange} defaultValue={placeholderText}/>
       <Form.Text >
@@ -27,7 +27,7 @@ const InputForm: React.FC = () => {
         <br/>
         Tekst z local state: {text}
       </Form.Text>
-    </div>
+    </Fragment>
   );
 }
 
