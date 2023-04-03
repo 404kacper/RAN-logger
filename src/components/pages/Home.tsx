@@ -5,6 +5,7 @@ import {Row, Col } from 'react-bootstrap';
 import InputForm from '../layout/InputForm';
 import ModalButton from '../layout/ModalButton';
 import Dropzone from '../layout/Dropzone';
+import Dropdown from '../layout/Dropdown';
 
 const Home = () => (
   <Fragment>
@@ -18,7 +19,15 @@ const Home = () => (
       <Col lg={1} className='bg-success border-top'>
       {/* Grid of 2 rows 1 column */}
         <Row style={{height: '47.5vh'}} className='align-items-center'>
-          <Col className='d-flex justify-content-center'> Place for filters</Col>
+          <Col className='d-flex justify-content-center'> 
+            <Dropdown
+              options={[
+                { name: 'AM', value: 'AM' },
+                { name: 'SDA', value: 'SDA' }
+              ]}
+              label="vendor"
+            />
+          </Col>
         </Row>
         <Row style={{height: '47.5vh'}} className='border-top align-items-center'>
           <Col className='d-flex justify-content-center'> Place for files</Col>
