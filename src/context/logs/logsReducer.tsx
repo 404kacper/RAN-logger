@@ -1,18 +1,19 @@
 import {
-  UPDATE_USER
+  GET_LOGS
 } from '../types';
 
 import {State} from "./interfaces/StateInterface";
 import {Action} from "./interfaces/ActionInterface";
 
 const logsReducer = (state: State, action: Action) => {
+  // Used to update logs state everytime App component is reloaded 
   switch (action.type) {
-      case UPDATE_USER:
+      case GET_LOGS:
         return {
           // Copy state
           ...state,
           // Assign new payload - update state
-          user: action.payload
+          logs: action.payload
         };
     default:
       return state;

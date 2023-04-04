@@ -1,7 +1,6 @@
 import { Fragment } from 'react';
 import {Row, Col } from 'react-bootstrap';
 
-
 import Dropzone from '../layout/Dropzone';
 import Filters from '../layout/Filters';
 
