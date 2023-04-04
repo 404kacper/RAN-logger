@@ -8,3 +8,35 @@ html, body {
 .App {
     overflow-y: hidden;
 }
+
+.dropdown_label{
+    display: inline-block;
+    position: relative;
+    left: 5px;
+}
+
+.dropdown_options {
+    position: relative;
+    left: 20px;
+}
+
+.sidebar {
+    height: 100%;
+    width: 100%;
+    background-color: lightgray;
+    padding: 5px;
+}
+
+
+.sidebar.collapsed {
+    width: auto;
+}
+
+.sidebar_header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.no-padding {
+    padding: 0;
+}

@@ -2,10 +2,8 @@ import { Fragment } from 'react';
 import {Row, Col } from 'react-bootstrap';
 
 
-import InputForm from '../layout/InputForm';
-import ModalButton from '../layout/ModalButton';
 import Dropzone from '../layout/Dropzone';
-import Dropdown from '../layout/Dropdown';
+import Filters from '../layout/Filters';
 
 const Home = () => (
   <Fragment>
@@ -16,17 +14,11 @@ const Home = () => (
       <Col lg={1} className='bg-success d-flex justify-content-center align-items-center'> Place for theme icon</Col>
     </Row>
     <Row style={{height: '95vh'}}>
-      <Col lg={1} className='bg-success border-top'>
+      <Col lg={1} className='bg-success border-top no-padding'>
       {/* Grid of 2 rows 1 column */}
-        <Row style={{height: '47.5vh'}} className='align-items-center'>
-          <Col className='d-flex justify-content-center'> 
-            <Dropdown
-              options={[
-                { name: 'AM', value: 'AM' },
-                { name: 'SDA', value: 'SDA' }
-              ]}
-              label="vendor"
-            />
+        <Row style={{height: '47.5vh'}} className='align-items-top'>
+          <Col className='d-flex justify-content-left'>
+            <Filters></Filters>
           </Col>
         </Row>
         <Row style={{height: '47.5vh'}} className='border-top align-items-center'>
@@ -43,8 +35,6 @@ const Home = () => (
             {/* Dropzone component to be reworked - needs new state for errors => alerts */}
             {/* Also needs to be secured only to accept specific format of files(potential errors) - .txt for example */}
             <Dropzone></Dropzone>
-            <InputForm></InputForm>
-            <ModalButton></ModalButton>
           </Col>
         </Row>
       </Col>
