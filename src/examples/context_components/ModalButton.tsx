@@ -6,6 +6,8 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import {Button, Modal} from "react-bootstrap"
 
 const ModalButton: React.FC = () => {
+  // This requries logsContext to have user state that stores a string (and all the actions/dispatches that are associated with it)- deprecated example for current state of app
+  // Thus it should only serve as visul example
   const logsContext = useContext(LogsContext);
   
   const [showModal, setShowModal] = useState(false);

@@ -1,8 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Row, Col, Form, Alert } from 'react-bootstrap';
 import { useDropzone, DropzoneRootProps, DropzoneInputProps } from 'react-dropzone';
 
+import LogsContext from '../../context/logs/logsContext';
+
 const DropzoneComponent: React.FC = () => {
+  // CONTEXT
+  const logsContext = useContext(LogsContext);
+
   // LOCAL STATES:
   const storagePrefix: string = "samsung-ran-logger-"
 
@@ -26,21 +31,6 @@ const DropzoneComponent: React.FC = () => {
   // state to set and display errors
   const [error, setError] = useState<string>("");
 
-  // HOOKS AND METHODS:
-  // useEffect hook that executes everytime component is mounted
-  useEffect(() => {
-    if(files.length > 0) {
-        files.forEach( file => {
-            const fileReader = new FileReader();
-            fileReader.onload = (e) => {
-                const fileContents = e.target?.result;
-                console.log(`File name: ${file.name}\nFile contents: \n${fileContents}`);
-            }
-            fileReader.readAsText(file);
-        })
-    }
-  });
-
   // another useEffect hook that executes on every update of files state
   // the idea of this hook is to only store filesMap in localStorage once for each files state change
   useEffect(() => {
@@ -48,7 +38,6 @@ const DropzoneComponent: React.FC = () => {
   
     // array of promises is returned - each promise represents one file reading 
     Promise.all(files.map(file => {
-
         // creation of Promise instances for each file
       return new Promise<void>((resolve, reject) => {
         // each file gets instance of FileReader & onload method executes after readAsText(file) is called to set filesMap entries
@@ -65,11 +54,16 @@ const DropzoneComponent: React.FC = () => {
       });
     }))
     .then(() => {
+      // Saves files to local storage
       localStorage.setItem(storagePrefix + 'files', JSON.stringify(Array.from(filesMap.entries())));
+      // Retrieves them and interprets - necessary to update global logs state
+      const storedLogs = logsContext.retrieveLogsFromStorage();
+      logsContext.getStoredLogs(storedLogs);
     })
     .catch(() => {
       console.error('Error reading files');
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files]);
 
   // method to handle user checkbox preferences
