@@ -3,6 +3,8 @@ import Form from 'react-bootstrap/Form';
 import LogsContext from '../../context/logs/logsContext';
 
 const InputForm: React.FC = () => {
+  // This requries logsContext to have user state that stores a string (and all the actions/dispatches that are associated with it)- deprecated example for current state of app
+  // Thus it should only serve as visul example
   const logsContext = useContext(LogsContext)
 
   // Value initialized to global state in it's file - logsState
