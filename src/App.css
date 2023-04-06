@@ -17,4 +17,25 @@ html, body {
 .filesElement:hover {
     border: 3px solid #0D6EFD;
     background-color: #6EA8FE;
+
+.dropdown_label{
+    display: inline-block;
+    position: relative;
+    left: 5px;
+}
+
+.dropdown_options {
+    position: relative;
+    left: 20px;
+}
+
+.sidebar {
+    height: 100%;
+    width: 100%;
+    background-color: lightgray;
+    padding: 5px;
+}
+
+.sidebar_filters {
+    padding-top: 3px;
 }
