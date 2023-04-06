@@ -8,3 +8,13 @@ html, body {
 .App {
     overflow-y: hidden;
 }
+
+.filesElement {
+    border: 3px solid transparent;
+    background-color: azure;
+}
+
+.filesElement:hover {
+    border: 3px solid #0D6EFD;
+    background-color: #6EA8FE;
+}
