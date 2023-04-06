@@ -25,7 +25,7 @@ const Home = () => {
         </Col>
       </Row>
       <Row style={{ height: '95vh' }}>
-        <Col lg={"auto"} className='bg-success border-top no-padding minwidth26'  style={collapsed ? {width: '0vw'} : {width: '8.33vw'}}>
+        <Col lg={"auto"} className='bg-success border-top p-0'  style={collapsed ? {width: '1vw'} : {width: '8.33vw'}}>
           {/* Grid of 2 rows 1 column */}
             <Row style={{ height: '47.5vh' }} className='align-items-top'>
               <Col className='d-flex justify-content-left'>              
@@ -37,7 +37,7 @@ const Home = () => {
             <Col className='d-flex justify-content-center'> Pla ce for fil es</Col>
           </Row>
         </Col>
-        <Col fluid className='bg-primary'>
+        <Col className='bg-primary'>
           {/* Grid of 2 rows 1 column */}
           <Row style={{ height: '10vh' }} className='align-items-center bg-danger'>
             <Col className='d-flex justify-content-center'> Place for log filters and/or search bar</Col>

@@ -27,24 +27,6 @@ html, body {
     padding: 5px;
 }
 
-
-.sidebar.collapsed {
-    width: auto;
-}
-
-.sidebar_header {
-    display: flex;
-    justify-content: space-between;
-}
-
-.no-padding {
-    padding: 0 !important;
-}
-
 .sidebar_filters {
     padding-top: 3px;
-}
-
-.minwidth26{
-    min-width: 26px;
 }
