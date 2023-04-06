@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import {Row, Col } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import { useState } from 'react';
 
 import Dropzone from '../layout/Dropzone';

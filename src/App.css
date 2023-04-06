@@ -9,6 +9,15 @@ html, body {
     overflow-y: hidden;
 }
 
+.filesElement {
+    border: 3px solid transparent;
+    background-color: azure;
+}
+
+.filesElement:hover {
+    border: 3px solid #0D6EFD;
+    background-color: #6EA8FE;
+
 .dropdown_label{
     display: inline-block;
     position: relative;

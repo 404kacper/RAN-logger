@@ -3,6 +3,7 @@ import { Row, Col, Form, Alert } from 'react-bootstrap';
 import { useDropzone, DropzoneRootProps, DropzoneInputProps } from 'react-dropzone';
 
 import LogsContext from '../../context/logs/logsContext';
+import FilesElement from './FilesElement';
 
 const DropzoneComponent: React.FC = () => {
   // CONTEXT
@@ -138,10 +139,11 @@ const DropzoneComponent: React.FC = () => {
           <Form.Group controlId="formFiles">
               <Form.Label>Dodane Pliki:</Form.Label>
               {files.map((file) => (
-                <div key={file.name} className="mb-2">
-                  <span>{file.name}</span>
-                  <button onClick={() => handleDelete(file)} className="m-2">Usuń</button>
-                </div>
+                // <div key={file.name} className="mb-2">
+                //   <span>{file.name}</span>
+                //   <button onClick={() => handleDelete(file)} className="m-2">Usuń</button>
+                // </div>
+                <FilesElement fileName={file.name} onClickDelete={() => handleDelete(file)}></FilesElement>
               ))}
             </Form.Group>
           </Col>
@@ -149,8 +151,8 @@ const DropzoneComponent: React.FC = () => {
       )}
       <Row>
         <Col>
-          <Form.Group controlId="formRemember">
-            <Form.Check type="checkbox" label="Zapamiętaj dodane pliki" checked={rememberFiles} onChange={handleRememberFiles} />
+          <Form.Group controlId="formRemember" className='mt-2'>
+            <Form.Check type="checkbox" label="Zapamiętaj dodane pliki" checked={rememberFiles} onChange={handleRememberFiles}/>
           </Form.Group>
         </Col>
       </Row>
