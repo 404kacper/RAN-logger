@@ -17,8 +17,9 @@ html, body {
 .filesElement:hover {
     border: 3px solid #0D6EFD;
     background-color: #6EA8FE;
+}
 
-.dropdown_label{
+.dropdown_label {
     display: inline-block;
     position: relative;
     left: 5px;
