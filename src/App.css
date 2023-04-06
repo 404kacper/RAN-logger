@@ -45,12 +45,6 @@ html, body {
     padding-top: 3px;
 }
 
-
-.resizeShrink {
-    flex: 0 1 0;
+.minwidth26{
+    min-width: 26px;
 }
-
-.resizeGrow {
-    flex: 1 0 0;
-}
-  
