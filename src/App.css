@@ -11,7 +11,6 @@ html, body {
 
 .filesElement {
     border: 3px solid transparent;
-    background-color: azure;
 }
 
 .filesElement:hover {
@@ -34,9 +33,9 @@ html, body {
     height: 100%;
     width: 100%;
     background-color: lightgray;
-    padding: 5px;
 }
 
-.sidebar_filters {
-    padding-top: 3px;
+.files {
+    height: 100%;
+    background-color: lightgray;
 }

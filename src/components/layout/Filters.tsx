@@ -1,4 +1,5 @@
 import React from "react";
+import { Container } from "react-bootstrap";
 import Dropdown from './Dropdown';
 import  '../../App.css';
 
@@ -9,8 +10,8 @@ interface FilterProps {
 
 const Filters: React.FC<FilterProps> = ({collapsed, collapsedChanger}) => {
     return (
-      <div className={`sidebar ${collapsed ? "collapsed" : ""}`}>
-        <div className="d-flex justify-content-between">
+      <Container className={`sidebar ${collapsed ? "collapsed" : ""}py-2`}>
+        <div className="d-flex justify-content-start">
             {collapsed ? (   
                 <i className="sidebar_expand_icon" onClick={() => collapsedChanger(!collapsed)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-double-right" viewBox="0 0 16 16">
@@ -22,8 +23,8 @@ const Filters: React.FC<FilterProps> = ({collapsed, collapsedChanger}) => {
                     <i className="filter_icon">
                     <svg width="21" height="20" viewBox="0 0 24 23" fill="none" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" clip-rule="evenodd" d="M17.25 2.0001C16.9545 2.0001 16.6619 2.0583 16.389 2.17137C16.116 2.28444 15.8679 2.45018 15.659 2.65911C15.4501 2.86804 15.2843 3.11608 15.1713 3.38906C15.0582 3.66204 15 3.95462 15 4.2501C15 4.54557 15.0582 4.83815 15.1713 5.11114C15.2843 5.38412 15.4501 5.63216 15.659 5.84109C15.8679 6.05002 16.116 6.21575 16.389 6.32883C16.6619 6.4419 16.9545 6.5001 17.25 6.5001C17.8467 6.5001 18.419 6.26304 18.841 5.84109C19.2629 5.41913 19.5 4.84683 19.5 4.2501C19.5 3.65336 19.2629 3.08106 18.841 2.65911C18.419 2.23715 17.8467 2.0001 17.25 2.0001ZM13.575 3.5001C13.7471 2.65238 14.207 1.89024 14.8768 1.34281C15.5466 0.795387 16.385 0.496338 17.25 0.496338C18.115 0.496338 18.9534 0.795387 19.6232 1.34281C20.293 1.89024 20.7529 2.65238 20.925 3.5001H24V5.0001H20.925C20.7529 5.84781 20.293 6.60995 19.6232 7.15738C18.9534 7.70481 18.115 8.00386 17.25 8.00386C16.385 8.00386 15.5466 7.70481 14.8768 7.15738C14.207 6.60995 13.7471 5.84781 13.575 5.0001H0V3.5001H13.575ZM6.75 9.5001C6.15326 9.5001 5.58097 9.73715 5.15901 10.1591C4.73705 10.5811 4.5 11.1534 4.5 11.7501C4.5 12.3468 4.73705 12.9191 5.15901 13.3411C5.58097 13.763 6.15326 14.0001 6.75 14.0001C7.34674 14.0001 7.91903 13.763 8.34099 13.3411C8.76295 12.9191 9 12.3468 9 11.7501C9 11.1534 8.76295 10.5811 8.34099 10.1591C7.91903 9.73715 7.34674 9.5001 6.75 9.5001ZM3.075 11.0001C3.24714 10.1524 3.70705 9.39024 4.37681 8.84281C5.04657 8.29539 5.88498 7.99634 6.75 7.99634C7.61502 7.99634 8.45343 8.29539 9.12319 8.84281C9.79295 9.39024 10.2529 10.1524 10.425 11.0001H24V12.5001H10.425C10.2529 13.3478 9.79295 14.11 9.12319 14.6574C8.45343 15.2048 7.61502 15.5039 6.75 15.5039C5.88498 15.5039 5.04657 15.2048 4.37681 14.6574C3.70705 14.11 3.24714 13.3478 3.075 12.5001H0V11.0001H3.075ZM17.25 17.0001C16.6533 17.0001 16.081 17.2372 15.659 17.6591C15.2371 18.0811 15 18.6534 15 19.2501C15 19.8468 15.2371 20.4191 15.659 20.8411C16.081 21.263 16.6533 21.5001 17.25 21.5001C17.8467 21.5001 18.419 21.263 18.841 20.8411C19.2629 20.4191 19.5 19.8468 19.5 19.2501C19.5 18.6534 19.2629 18.0811 18.841 17.6591C18.419 17.2372 17.8467 17.0001 17.25 17.0001ZM13.575 18.5001C13.7471 17.6524 14.207 16.8902 14.8768 16.3428C15.5466 15.7954 16.385 15.4963 17.25 15.4963C18.115 15.4963 18.9534 15.7954 19.6232 16.3428C20.293 16.8902 20.7529 17.6524 20.925 18.5001H24V20.0001H20.925C20.7529 20.8478 20.293 21.61 19.6232 22.1574C18.9534 22.7048 18.115 23.0039 17.25 23.0039C16.385 23.0039 15.5466 22.7048 14.8768 22.1574C14.207 21.61 13.7471 20.8478 13.575 20.0001H0V18.5001H13.575Z" fill="black"/> </svg>
                     </i>
-                    <h6 className="sidebar_filters">Filters</h6>
-                    <i className="sidebar_expand_icon" onClick={() => collapsedChanger(!collapsed)}>
+                    <h5 className="align-self-center mb-0 mx-2">Filters</h5>
+                    <i className="sidebar_expand_icon" onClick={() => collapsedChanger(!collapsed)} style={{marginLeft: 'auto'}}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-double-left" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
                             <path fill-rule="evenodd" d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
@@ -33,7 +34,7 @@ const Filters: React.FC<FilterProps> = ({collapsed, collapsedChanger}) => {
             )}
         </div>
         {collapsed ? null : (
-          <div className="sidebar_content">          
+          <div className="sidebar_content mt-2">          
             <Dropdown
             options={[
                 { name: 'AM', value: 'AM' },
@@ -50,7 +51,7 @@ const Filters: React.FC<FilterProps> = ({collapsed, collapsedChanger}) => {
             />            
           </div>
         )}
-      </div>
+      </Container>
     );
   };
   
