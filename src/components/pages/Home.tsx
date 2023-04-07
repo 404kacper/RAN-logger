@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 import { Row, Col } from 'react-bootstrap';
 import { useState } from 'react';
 
-import Dropzone from '../layout/Dropzone';
+import Files from '../layout/Files';
 import Filters from '../layout/Filters';
 
 import  '../../App.css';
@@ -25,16 +25,20 @@ const Home = () => {
         </Col>
       </Row>
       <Row style={{ height: '95vh' }}>
-        <Col lg={"auto"} className='bg-success border-top p-0'  style={collapsed ? {width: '1vw'} : {width: '8.33vw'}}>
+        <Col lg={"auto"} className='bg-success border border-2 border-dark p-0'  style={collapsed ? {width: '1vw'} : {width: '8.33vw'}}>
           {/* Grid of 2 rows 1 column */}
             <Row style={{ height: '47.5vh' }} className='align-items-top'>
-              <Col className='d-flex justify-content-left'>              
+              <Col>              
                 <Filters collapsed={collapsed} collapsedChanger={setCollapsed} />
               </Col>
             </Row>
 
-          <Row style={{ height: '47.5vh' }} className='border-top align-items-center'>
-            <Col className='d-flex justify-content-center'> Pla ce for fil es</Col>
+          <Row style={{ height: '47.5vh' }} className='border-top border-dark'>
+            <Col>
+              {/* Dropzone component to be reworked - needs new state for errors => alerts */}
+              {/* Also needs to be secured only to accept specific format of files(potential errors) - .txt for example */}
+              <Files collapsed={collapsed}/>
+            </Col>
           </Row>
         </Col>
         <Col className='bg-primary'>
@@ -44,9 +48,6 @@ const Home = () => {
           </Row>
           <Row style={{ height: '85vh' }} className='align-items-center bg-info'>
             <Col className='d-flex flex-column justify-content-center'>
-              {/* Dropzone component to be reworked - needs new state for errors => alerts */}
-              {/* Also needs to be secured only to accept specific format of files(potential errors) - .txt for example */}
-              <Dropzone></Dropzone>
             </Col>
           </Row>
         </Col>
