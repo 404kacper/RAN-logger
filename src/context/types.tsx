@@ -1,1 +1,3 @@
-export const GET_LOGS = 'GET_LOGS';
+export const SET_LOGS = 'SET_LOGS';
+export const SET_ACTIVE_FILE = 'SET_ACTIVE_FILE';
+export const SET_REMEMBER_PREFERENCES = 'SET_REMEMBER_PREFERENCES';

@@ -18,27 +18,22 @@ const Files: React.FC<FilesProps> = ({collapsed}) => {
   // LOCAL STATES:
   const storagePrefix: string = "samsung-ran-logger-"
 
-  // state to retrieve and store user preferences
-  const [rememberFiles, setRememberFiles] = useState<boolean>(() => {
-    const storedValue = localStorage.getItem(storagePrefix + 'rememberFiles');
-    return storedValue !== null ? JSON.parse(storedValue) : false;
-  });
-
-  // initialize files state with data from localStorage
-  const [files, setFiles] = useState<File[]>(() => {
-    if (rememberFiles) {
-        const storedEntries = JSON.parse(localStorage.getItem(storagePrefix + 'files') || '[]') as [string, string][];
-        const storedFiles = storedEntries.map(([name, data]) => new File([data], name));
-        return storedFiles;
-    } else {
-        return [];
-    }
-  });
-
   // state to set and display errors
   const [error, setError] = useState<string>("");
 
-  // another useEffect hook that executes on every update of files state
+  // initialize files state with data from localStorage
+  const [files, setFiles] = useState<File[]>(() => {
+    // Part responsible for setting files back to [] whenever preferences is unchecked
+    if (logsContext.rememberPreferences) {
+      const storedEntries = JSON.parse(localStorage.getItem(storagePrefix + 'files') || '[]') as [string, string][];
+      const storedFiles = storedEntries.map(([name, data]) => new File([data], name));
+      return storedFiles;
+    } else {
+      return [];
+    }
+  });
+
+  // hook that executes on every update of files state
   // the idea of this hook is to only store filesMap in localStorage once for each files state change
   useEffect(() => {
     const filesMap = new Map<string, string>();
@@ -62,10 +57,9 @@ const Files: React.FC<FilesProps> = ({collapsed}) => {
     }))
     .then(() => {
       // Saves files to local storage
-      localStorage.setItem(storagePrefix + 'files', JSON.stringify(Array.from(filesMap.entries())));
-      // Retrieves them and interprets - necessary to update global logs state
-      const storedLogs = logsContext.retrieveLogsFromStorage();
-      logsContext.getStoredLogs(storedLogs);
+      logsContext.logsStorageManager.replaceLogsInStorage(filesMap);
+      // Store them in global state
+      logsContext.setStoredLogs(filesMap);
     })
     .catch(() => {
       console.error('Error reading files');
@@ -75,9 +69,9 @@ const Files: React.FC<FilesProps> = ({collapsed}) => {
 
   // method to handle user checkbox preferences
   const handleRememberFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.checked;
-    setRememberFiles(value);
-    localStorage.setItem(storagePrefix + 'rememberFiles', JSON.stringify(value));
+    const decision = e.target.checked;
+    logsContext.logsStorageManager.replacePreferencesInStorage(decision);
+    logsContext.setPreferences(decision);
   };
 
   // method to handle file dropping
@@ -105,8 +99,12 @@ const Files: React.FC<FilesProps> = ({collapsed}) => {
   };
 
   // method to handle file deletion
-  const handleDelete = (fileToDelete: File) => {
+  const handleDelete = (fileToDelete: File, event: React.MouseEvent<HTMLButtonElement>) => {
     setFiles((prev) => prev.filter((file) => file !== fileToDelete));
+    logsContext.logsStorageManager.replaceActiveFileInStorage("");
+    logsContext.setActiveFile("");
+    // Stops the event on button that was clicked - so that the parent element doesn't try setting state when inactive element is selected
+    event.stopPropagation();
   };
 
   // render error message if error state is not empty
@@ -139,14 +137,14 @@ const Files: React.FC<FilesProps> = ({collapsed}) => {
           <Dropzone getRootProps={getRootProps} getInputProps={getInputProps}/>
           {renderError()}
           <Form.Group controlId="formRemember" className='mt-2'>
-              <Form.Check type="checkbox" label="Zapamiętaj dodane pliki" checked={rememberFiles} onChange={handleRememberFiles} style={{fontSize: '0.9rem'}}/>
+              <Form.Check type="checkbox" label="Remember files" checked={logsContext.rememberPreferences} onChange={handleRememberFiles} style={{fontSize: '0.9rem'}}/>
           </Form.Group>
           {files.length > 0 && (
               <Form.Group controlId="formFiles">
                   {/* Scroll still needs to be stylized -  */}
                   <div style={{height: '30vh', overflowY: 'auto', overflowX: 'hidden'}}>
                     {files.map((file) => (
-                      <FilesElement fileName={file.name} onClickDelete={() => handleDelete(file)}/>
+                      <FilesElement key={file.name} fileName={file.name} onClickDelete={(event) => handleDelete(file, event)}/>
                     ))}
                   </div>
                 </Form.Group>
