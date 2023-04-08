@@ -11,22 +11,21 @@ class LogsStorageManager {
         const storedLogs = new Map<string, Log[]>();
     
         if (storageObject != null) {
-        // For each file interpeter creates key: value pair to store objects - file name with extension is used to retrieve the Log objects
-        storageObject.forEach((logFile: string[]) => {
-            const fileName = logFile[0];
-            const fileContents = logFile[1];
-        
-            const logInterpreter = new LogInterpreter(fileContents);
-        
-            const logObjects = logInterpreter.parseLogs();
-            storedLogs.set(fileName, logObjects);
-        })
-        
-        return storedLogs;
+          // For each file interpeter creates key: value pair to store objects - file name with extension is used to retrieve the Log objects
+          storageObject.forEach((logFile: string[]) => {
+              const fileName = logFile[0];
+              const fileContents = logFile[1];
+          
+              const logInterpreter = new LogInterpreter(fileContents);
+          
+              const logObjects = logInterpreter.parseLogs();
+              storedLogs.set(fileName, logObjects);
+          })
+          return storedLogs;
         } else {
-        return storedLogs;
-        }
+          return storedLogs;
     }
+  }
 
   // Helper to retrieve active files from local storage and initialize global state
   retrieveActiveFileFromStorage = (): string  => {

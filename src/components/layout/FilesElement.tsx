@@ -1,34 +1,36 @@
-import { useContext, useState, Fragment } from "react";
+import { useContext, useState, Fragment, useEffect } from "react";
 import { CloseButton } from "react-bootstrap";
 
 import LogsContext from '../../context/logs/logsContext';
 
 interface FilesElementProps {
     fileName: string
-    onClickDelete: () => void;
+    onClickDelete: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const FilesElement: React.FC<FilesElementProps> = ({fileName, onClickDelete}) => {
 
     const logsContext = useContext(LogsContext);
 
-    const [isActive, setIsActive] = useState(() => {
-        if (logsContext.activeFile === fileName) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    });
+    const [isActive, setIsActive] = useState(false);
 
     const handleOnClick = () => {
+        logsContext.logsStorageManager.replaceActiveFileInStorage(fileName);
         logsContext.setActiveFile(fileName);
-        setIsActive(true);
-        const rememberActiveFile = logsContext.rememberPreferences;
-        if (rememberActiveFile !== null && rememberActiveFile) {
-            logsContext.logsStorageManager.replaceActiveFileInStorage(fileName);
-        }
     }
+
+    useEffect(() => {
+        // Setting active styles on current session
+        if (logsContext.activeFile === fileName) {
+            setIsActive(true);
+        } else {
+            setIsActive(false);
+        }
+        // Storage management on refresh - currently always stores activeFile whenever pressed thus it needs to be reseted whenever preferences aren't set
+        if (!logsContext.rememberPreferences) {
+            logsContext.logsStorageManager.replaceActiveFileInStorage("");
+        }
+    }, [logsContext.activeFile, logsContext.logsStorageManager, logsContext.rememberPreferences , fileName])
 
     return (
         <Fragment>

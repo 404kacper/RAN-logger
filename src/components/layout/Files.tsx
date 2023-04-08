@@ -25,7 +25,6 @@ const Files: React.FC<FilesProps> = ({collapsed}) => {
   const [files, setFiles] = useState<File[]>(() => {
     // Part responsible for setting files back to [] whenever preferences is unchecked
     if (logsContext.rememberPreferences) {
-      // same as above but for files state
       const storedEntries = JSON.parse(localStorage.getItem(storagePrefix + 'files') || '[]') as [string, string][];
       const storedFiles = storedEntries.map(([name, data]) => new File([data], name));
       return storedFiles;
@@ -100,10 +99,12 @@ const Files: React.FC<FilesProps> = ({collapsed}) => {
   };
 
   // method to handle file deletion
-  const handleDelete = (fileToDelete: File) => {
+  const handleDelete = (fileToDelete: File, event: React.MouseEvent<HTMLButtonElement>) => {
     setFiles((prev) => prev.filter((file) => file !== fileToDelete));
     logsContext.logsStorageManager.replaceActiveFileInStorage("");
     logsContext.setActiveFile("");
+    // Stops the event on button that was clicked - so that the parent element doesn't try setting state when inactive element is selected
+    event.stopPropagation();
   };
 
   // render error message if error state is not empty
@@ -136,14 +137,14 @@ const Files: React.FC<FilesProps> = ({collapsed}) => {
           <Dropzone getRootProps={getRootProps} getInputProps={getInputProps}/>
           {renderError()}
           <Form.Group controlId="formRemember" className='mt-2'>
-              <Form.Check type="checkbox" label="Zapamiętaj dodane pliki" checked={logsContext.rememberPreferences} onChange={handleRememberFiles} style={{fontSize: '0.9rem'}}/>
+              <Form.Check type="checkbox" label="Remember files" checked={logsContext.rememberPreferences} onChange={handleRememberFiles} style={{fontSize: '0.9rem'}}/>
           </Form.Group>
           {files.length > 0 && (
               <Form.Group controlId="formFiles">
                   {/* Scroll still needs to be stylized -  */}
                   <div style={{height: '30vh', overflowY: 'auto', overflowX: 'hidden'}}>
                     {files.map((file) => (
-                      <FilesElement key={file.name} fileName={file.name} onClickDelete={() => handleDelete(file)}/>
+                      <FilesElement key={file.name} fileName={file.name} onClickDelete={(event) => handleDelete(file, event)}/>
                     ))}
                   </div>
                 </Form.Group>
