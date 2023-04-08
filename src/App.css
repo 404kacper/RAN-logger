@@ -11,9 +11,15 @@ html, body {
 
 .filesElement {
     border: 3px solid transparent;
+    background-color: #f8f9fa;
 }
 
 .filesElement:hover {
+    border: 3px solid #0D6EFD;
+    background-color: #6EA8FE;
+}
+
+.filesElement-active {
     border: 3px solid #0D6EFD;
     background-color: #6EA8FE;
 }

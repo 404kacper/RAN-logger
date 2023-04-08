@@ -20,25 +20,28 @@ const Files: React.FC<FilesProps> = ({collapsed}) => {
 
   // state to retrieve and store user preferences
   const [rememberFiles, setRememberFiles] = useState<boolean>(() => {
+    // retrieve the value that was set in local storage as initial value for the state
     const storedValue = localStorage.getItem(storagePrefix + 'rememberFiles');
     return storedValue !== null ? JSON.parse(storedValue) : false;
   });
 
   // initialize files state with data from localStorage
   const [files, setFiles] = useState<File[]>(() => {
+    // Part responsible for setting files back to [] whenever rememberFiles is unchecked in local storage
     if (rememberFiles) {
-        const storedEntries = JSON.parse(localStorage.getItem(storagePrefix + 'files') || '[]') as [string, string][];
-        const storedFiles = storedEntries.map(([name, data]) => new File([data], name));
-        return storedFiles;
+      // same as above but for files state
+      const storedEntries = JSON.parse(localStorage.getItem(storagePrefix + 'files') || '[]') as [string, string][];
+      const storedFiles = storedEntries.map(([name, data]) => new File([data], name));
+      return storedFiles;
     } else {
-        return [];
+      return [];
     }
   });
 
   // state to set and display errors
   const [error, setError] = useState<string>("");
 
-  // another useEffect hook that executes on every update of files state
+  // hook that executes on every update of files state
   // the idea of this hook is to only store filesMap in localStorage once for each files state change
   useEffect(() => {
     const filesMap = new Map<string, string>();
@@ -64,8 +67,8 @@ const Files: React.FC<FilesProps> = ({collapsed}) => {
       // Saves files to local storage
       localStorage.setItem(storagePrefix + 'files', JSON.stringify(Array.from(filesMap.entries())));
       // Retrieves them and interprets - necessary to update global logs state
-      const storedLogs = logsContext.retrieveLogsFromStorage();
-      logsContext.getStoredLogs(storedLogs);
+      const storedLogs = logsContext.logsStorageManager.retrieveLogsFromStorage();
+      logsContext.setStoredLogs(storedLogs);
     })
     .catch(() => {
       console.error('Error reading files');
@@ -78,6 +81,7 @@ const Files: React.FC<FilesProps> = ({collapsed}) => {
     const value = e.target.checked;
     setRememberFiles(value);
     localStorage.setItem(storagePrefix + 'rememberFiles', JSON.stringify(value));
+    logsContext.setPreferences(value);
   };
 
   // method to handle file dropping
@@ -107,6 +111,8 @@ const Files: React.FC<FilesProps> = ({collapsed}) => {
   // method to handle file deletion
   const handleDelete = (fileToDelete: File) => {
     setFiles((prev) => prev.filter((file) => file !== fileToDelete));
+    logsContext.setActiveFile("");
+    localStorage.setItem(storagePrefix + 'activeFile', "");
   };
 
   // render error message if error state is not empty
@@ -146,7 +152,7 @@ const Files: React.FC<FilesProps> = ({collapsed}) => {
                   {/* Scroll still needs to be stylized -  */}
                   <div style={{height: '30vh', overflowY: 'auto', overflowX: 'hidden'}}>
                     {files.map((file) => (
-                      <FilesElement fileName={file.name} onClickDelete={() => handleDelete(file)}/>
+                      <FilesElement key={file.name} fileName={file.name} onClickDelete={() => handleDelete(file)}/>
                     ))}
                   </div>
                 </Form.Group>

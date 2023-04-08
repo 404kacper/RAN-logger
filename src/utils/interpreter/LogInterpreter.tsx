@@ -44,7 +44,7 @@ class LogInterpreter {
       return new Log(code_1, time, code_2, code_3, code_4, type, code_5, message);
     }
     else{
-      console.log("Couldn't parse log text to class");
+      console.log("Couldn't parse line to Log object");
     }
   }
 }
