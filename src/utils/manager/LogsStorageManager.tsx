@@ -54,16 +54,16 @@ class LogsStorageManager {
     }
   }
 
-  replaceLogsInStorage = () => {
-
+  replaceLogsInStorage = (mapOfFiles: Map <string, string>) => {
+    localStorage.setItem(this.storagePrefix + 'files', JSON.stringify(Array.from(mapOfFiles.entries())));
   }
 
   replaceActiveFileInStorage = (activeFileName: string) => {
     localStorage.setItem(this.storagePrefix + 'activeFile', JSON.stringify(activeFileName));
   }
 
-  replacePreferencesInStorage = () => {
-
+  replacePreferencesInStorage = (preferencesDecision: boolean) => {
+    localStorage.setItem(this.storagePrefix + 'rememberFiles', JSON.stringify(preferencesDecision));
   }
 
 
