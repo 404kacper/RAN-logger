@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import Files from '../layout/Files';
 import Filters from '../layout/Filters';
+import LogsList from '../layout/LogsList';
 
 import  '../../App.css';
 
@@ -48,6 +49,7 @@ const Home = () => {
           </Row>
           <Row style={{ height: '85vh' }} className='align-items-center bg-info'>
             <Col className='d-flex flex-column justify-content-center'>
+              <LogsList/>
             </Col>
           </Row>
         </Col>
