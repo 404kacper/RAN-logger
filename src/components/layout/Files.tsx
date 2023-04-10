@@ -6,6 +6,7 @@ import LogsContext from '../../context/logs/logsContext';
 import FilesElement from './FilesElement';
 import Dropzone from './Dropzone';
 import FileIcon from '../../assets/FileIcon';
+import Log from '../../utils/interpreter/Log'
 
 interface FilesProps {
   collapsed: boolean;
@@ -56,14 +57,18 @@ const Files: React.FC<FilesProps> = ({collapsed}) => {
       });
     }))
     .then(() => {
-      // Saves files to local storage
+      // This part can perhaps be further simplified and refactored (change to files state would also be needed) - for now that is the workflow
+      // Saves files to local storage - simplest format( map of strings ) - key is file name value is contents of file 
       logsContext.logsStorageManager.replaceLogsInStorage(filesMap);
-      // Store them in global state
-      logsContext.setStoredLogs(filesMap);
+      // Retrival of map from local storage and it's further parsing with LogsStorageManager to individual Log objects --> new Map of key: file name and value: array of Log objects
+      const stateMap: Map<string, Log[]> = logsContext.logsStorageManager.retrieveLogsFromStorage();
+      // Store new map in local storage
+      logsContext.setStoredLogs(stateMap);
     })
     .catch(() => {
       console.error('Error reading files');
     });
+    // Only do above when files state changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [files]);
 

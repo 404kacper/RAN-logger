@@ -1,7 +1,6 @@
 import React from "react";
 import { Container } from "react-bootstrap";
 import Dropdown from './Dropdown';
-import  '../../App.css';
 
 interface FilterProps {
   collapsed: boolean;

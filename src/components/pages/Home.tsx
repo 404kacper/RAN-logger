@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import Files from '../layout/Files';
 import Filters from '../layout/Filters';
+import LogsList from '../layout/LogsList';
 
 import  '../../App.css';
 
@@ -41,13 +42,14 @@ const Home = () => {
             </Col>
           </Row>
         </Col>
-        <Col className='bg-primary'>
+        <Col style={{backgroundColor: 'lightgray'}}>
           {/* Grid of 2 rows 1 column */}
           <Row style={{ height: '10vh' }} className='align-items-center bg-danger'>
             <Col className='d-flex justify-content-center'> Place for log filters and/or search bar</Col>
           </Row>
-          <Row style={{ height: '85vh' }} className='align-items-center bg-info'>
-            <Col className='d-flex flex-column justify-content-center'>
+          <Row style={{ height: '85vh' }}>
+            <Col style={{ height: '100%' }}>
+              <LogsList/>
             </Col>
           </Row>
         </Col>
