@@ -47,8 +47,8 @@ const Home = () => {
           <Row style={{ height: '10vh' }} className='align-items-center bg-danger'>
             <Col className='d-flex justify-content-center'> Place for log filters and/or search bar</Col>
           </Row>
-          <Row style={{ height: '85vh' }} className='align-items-center bg-info'>
-            <Col className='d-flex flex-column justify-content-center'>
+          <Row style={{ height: '85vh' }} className='align-items-start bg-info'>
+            <Col style={{height: '100%'}}>
               <LogsList/>
             </Col>
           </Row>
