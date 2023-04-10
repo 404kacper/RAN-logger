@@ -26,7 +26,7 @@ const Home = () => {
         </Col>
       </Row>
       <Row style={{ height: '95vh' }}>
-        <Col lg={"auto"} className='bg-success border border-2 border-dark p-0'  style={collapsed ? {width: '1vw'} : {width: '8.33vw'}}>
+        <Col lg={"auto"} className='bg-success border border-2 border-dark p-0'  style={collapsed ? {width: '1.8vw'} : {width: '8.33vw'}}>
           {/* Grid of 2 rows 1 column */}
             <Row style={{ height: '47.5vh' }} className='align-items-top'>
               <Col>              
