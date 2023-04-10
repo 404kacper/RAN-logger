@@ -4,20 +4,11 @@ import LogsContext from "../../context/logs/logsContext";
 
 const LogsList = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [currentActiveFile, setCurrentActiveFile] = useState("");
   const [pageSize, setPageSize] = useState(10);
-  const [activeFileChanged, setActiveFileChanged] = useState(false);
 
   const logsContext = useContext(LogsContext);
 
-  const logs = [
-    { id: 1, name: "John", age: 30 },
-    { id: 2, name: "Jane", age: 25 },
-    { id: 3, name: "Bob", age: 42 },
-    // ...
-  ];
-
-  const totalPages = Math.ceil(logs.length / pageSize);
+  const totalPages = Math.ceil(3);
   // const startIndex = (currentPage - 1) * pageSize;
   // const endIndex = startIndex + pageSize;
   // const currentPageLogs = logs.slice(startIndex, endIndex);
@@ -25,10 +16,6 @@ const LogsList = () => {
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
-
-  useEffect(() => {
-    setCurrentActiveFile(logsContext.activeFile);
-  }, [logsContext.activeFile])
 
   return (
     <div>
@@ -38,27 +25,29 @@ const LogsList = () => {
             <thead>
               <tr>
                 {Object.keys(logsContext.logs.get(logsContext.activeFile)[0]).map((member) => (
-                  <th key={member}>{member.toUpperCase()}</th>
+                  <th>{member.toUpperCase()}</th>
                 ))}
               </tr>
             </thead>
-            <tbody>
-            {logsContext.logs.get(logsContext.activeFile).map((log: any) => (
-              <tr key={log.id}>
-                {Object.keys(log).map((member) => (
-                  <td key={member}>{log[member]}</td>
-                ))}
-              </tr>
-            ))}
-              {/* {currentPageLogs.map((log) => (
-                <tr key={log.id}>
-                  <td>{log.id}</td>
-                  <td>{log.name}</td>
-                  <td>{log.age}</td>
+            {logsContext.logs.get(logsContext.activeFile).length > 0 ? (
+              <tbody>
+              {logsContext.logs.get(logsContext.activeFile).map((log: any) => (
+                <tr>
+                  {Object.keys(log).map((member) => (
+                    <td>{log[member]}</td>
+                  ))}
                 </tr>
-              ))} */}
-            </tbody>
+              ))}
+              </tbody>
+            ) : (
+              <tbody>
+                <tr>
+                  <td colSpan={Object.keys(logsContext.logs.get(logsContext.activeFile)[0]).length}>No data available.</td>
+                </tr>
+              </tbody>
+            )}
           </Table>
+
         <Pagination>
           <Pagination.First
             disabled={currentPage === 1}
