@@ -45,3 +45,8 @@ html, body {
     height: 100%;
     background-color: lightgray;
 }
+
+.logs-list {
+    height: 100%;
+    overflow-y: auto;
+}

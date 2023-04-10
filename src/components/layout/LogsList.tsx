@@ -1,10 +1,10 @@
-import { useState, useContext, Fragment } from "react";
+import { useState, useContext } from "react";
 import { Table, Pagination, Container } from "react-bootstrap";
 import LogsContext from "../../context/logs/logsContext";
 
 const LogsList = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 15;
 
   const logsContext = useContext(LogsContext);
 
@@ -23,8 +23,7 @@ const LogsList = () => {
   };
 
   return (
-    <Container>
-      <Fragment>
+    <Container fluid className="logs-list d-flex flex-column justify-content-between">
         <Table striped bordered hover variant="light">
           <thead>
             <tr>
@@ -79,7 +78,6 @@ const LogsList = () => {
           onClick={() => handlePageChange(totalPages)}
         />
       </Pagination>
-    </Fragment>
     </Container>
   );
 };

@@ -42,13 +42,13 @@ const Home = () => {
             </Col>
           </Row>
         </Col>
-        <Col className='bg-primary'>
+        <Col style={{backgroundColor: 'lightgray'}}>
           {/* Grid of 2 rows 1 column */}
           <Row style={{ height: '10vh' }} className='align-items-center bg-danger'>
             <Col className='d-flex justify-content-center'> Place for log filters and/or search bar</Col>
           </Row>
-          <Row style={{ height: '85vh' }} className='align-items-start bg-info'>
-            <Col style={{height: '100%'}}>
+          <Row style={{ height: '85vh' }}>
+            <Col style={{ height: '100%' }}>
               <LogsList/>
             </Col>
           </Row>
