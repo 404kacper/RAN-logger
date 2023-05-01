@@ -62,11 +62,6 @@ html, body {
     flex: 1;
     margin-right: 1rem;
   }
-  
-  .search-button {
-    height: 2.5rem;
-    width: 7rem;
-  }
 
   .selected {
     background-color: #ADD8E6;

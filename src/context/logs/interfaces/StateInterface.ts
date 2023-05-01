@@ -5,4 +5,5 @@ export interface State {
     logs: Map <string, Log[]>;
     activeFile: string;
     rememberPreferences: boolean;
+    searchedTerm: string;
   }
