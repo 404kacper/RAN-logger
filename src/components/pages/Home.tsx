@@ -38,7 +38,7 @@ const Home = () => {
           Place for theme icon
         </Col>
       </Row>
-      <Row style={{ height: "95vh" }}>
+      <Row style={{ height: "92vh" }}>
         <Col
           lg={"auto"}
           className="bg-success border border-2 border-dark p-0"

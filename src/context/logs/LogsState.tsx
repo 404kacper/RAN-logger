@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useReducer, useState, useEffect } from "react";
 import LogsContext from "./logsContext";
 import LogsReducer from "./logsReducer";
 
@@ -14,6 +14,7 @@ import {
 
 const LogsState = (props: any) => {
   const logsStorageManager = new LogsStorageManager();
+  const [refreshCount, setRefreshCount] = useState(0); // add a counter state
 
   // Initialize global state from values in local storage
   const initialState = {
@@ -24,6 +25,14 @@ const LogsState = (props: any) => {
   };
 
   const [state, dispatch] = useReducer(LogsReducer, initialState);
+
+  // useEffect hook to increment refreshCount every time the component re-renders
+  useEffect(() => {
+    setRefreshCount((prevCount) => prevCount + 1);
+    console.log(`LogsState has refreshed ${refreshCount} times.`);
+    console.log(`Current state is: ${JSON.stringify(state)}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
 
   // Used on App component initialization - dispatches reducer to update logs state with appropriate data
   const setStoredLogs = (logsMap: Map<string, Log[]>) => {

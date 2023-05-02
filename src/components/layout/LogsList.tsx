@@ -2,7 +2,7 @@ import { useContext, Fragment } from "react";
 import { Table, Container } from "react-bootstrap";
 import LogsContext from "../../context/logs/logsContext";
 
-const LogsList = () => {
+const LogsList: React.FC = () => {
   const logsContext = useContext(LogsContext);
 
   // Check if active file exists in the map
@@ -25,7 +25,7 @@ const LogsList = () => {
     }
     const regex = new RegExp(`(${query})`, "gi");
     const parts = text.split(regex);
-    console.log("Executing part responsible for mark return");
+
     return parts.map((part, i) =>
       regex.test(part) ? (
         <mark key={i}>{part}</mark>
@@ -64,7 +64,6 @@ const LogsList = () => {
               <tr key={index}>
                 {Object.keys(log).map((member, index) => (
                   <td key={index} style={{ height: "5vh" }}>
-                    {/* {log[member]} */}
                     {highlightMatches(
                       log[member],
                       logsContext.searchedTerm,

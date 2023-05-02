@@ -7,12 +7,15 @@ const SearchBar: React.FC = () => {
   const logsContext = useContext(LogsContext);
   const [searchTerm, setSearchTerm] = useState(logsContext.searchedTerm);
 
-  const handleSearch = () => {
-    if (logsContext.activeFile !== "") {
+  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (logsContext.rememberPreferences) {
       logsContext.logsStorageManager.replaceSearchedTermInStorage(searchTerm);
-      console.log("Search term from SearchBar component: " + searchTerm);
-      logsContext.setSearchedTerm(searchTerm);
+    } else {
+      logsContext.logsStorageManager.replaceSearchedTermInStorage("");
     }
+
+    logsContext.setSearchedTerm(searchTerm);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,17 +23,17 @@ const SearchBar: React.FC = () => {
   };
 
   return (
-    <div className="d-flex">
+    <Form className="d-flex" onSubmit={handleSearch}>
       <Form.Control
         type="text"
         placeholder="Search"
         value={searchTerm}
         onChange={handleInputChange}
       />
-      <Button variant="primary" onClick={handleSearch} className="ml-2">
+      <Button variant="primary" type="submit" className="ml-2">
         Search
       </Button>
-    </div>
+    </Form>
   );
 };
 
