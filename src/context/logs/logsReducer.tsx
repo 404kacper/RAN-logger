@@ -21,9 +21,11 @@ const logsReducer = (state: State, action: Action) => {
         logs: action.payload,
       };
     case REMOVE_LOG:
-      state.logs.delete(action.payload);
       return {
         ...state,
+        logs: new Map(
+          Array.from(state.logs).filter(([key]) => key !== action.payload)
+        ),
       };
     case ADD_LOG:
       return {

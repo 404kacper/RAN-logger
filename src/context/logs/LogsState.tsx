@@ -1,4 +1,4 @@
-import { useReducer, useState, useEffect } from "react";
+import { useReducer } from "react";
 import LogsContext from "./logsContext";
 import LogsReducer from "./logsReducer";
 
@@ -16,51 +16,34 @@ import {
 
 const LogsState = (props: any) => {
   const logsStorageManager = new LogsStorageManager();
-  const [refreshCount, setRefreshCount] = useState(0); // add a counter state
 
+  // Check if user wants to remember preferences and fill in state accordingly
   const getInitialState = () => {
-    // Check if user wants to remember preferences and fill in state accordingly
-    const initialState = logsStorageManager.retrievePreferencesFromStorage()
+    const preferencesFromStorage =
+      logsStorageManager.retrievePreferencesFromStorage();
+
+    if (!preferencesFromStorage) {
+      logsStorageManager.replaceLogsInStorage(new Map<string, Log[]>());
+      logsStorageManager.replaceActiveFileInStorage("");
+      logsStorageManager.replaceSearchedTermInStorage("");
+    }
+
+    return preferencesFromStorage
       ? {
-          // Retrieve and initialize everything with values from storage
           logs: logsStorageManager.retrieveLogsFromStorage(),
           activeFile: logsStorageManager.retrieveActiveFileFromStorage(),
-          rememberPreferences:
-            logsStorageManager.retrievePreferencesFromStorage(),
+          rememberPreferences: preferencesFromStorage,
           searchedTerm: logsStorageManager.retrieveSearchedTermFromStorage(),
         }
       : {
-          // Initialize state to default values
           logs: new Map<string, Log[]>(),
           activeFile: "",
           rememberPreferences: false,
           searchedTerm: "",
         };
-
-    // set everything back to default values in storage if the user does not want to remember preferences
-    // if (!logsStorageManager.retrievePreferencesFromStorage()) {
-    //   logsStorageManager.replaceLogsInStorage(initialState.logs);
-
-    //   logsStorageManager.replaceActiveFileInStorage(initialState.activeFile);
-
-    //   logsStorageManager.replaceSearchedTermInStorage(
-    //     initialState.searchedTerm
-    //   );
-    // }
-
-    return initialState;
   };
 
   const [state, dispatch] = useReducer(LogsReducer, getInitialState());
-
-  // useEffect hook to increment refreshCount every time the component re-renders
-  useEffect(() => {
-    setRefreshCount((prevCount) => prevCount + 1);
-    console.log(`LogsState has refreshed ${refreshCount} times.`);
-    // console.log(`Current state is: ${JSON.stringify(state)}`);
-    // console.log(state.logs);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state]);
 
   // Used on App component initialization - dispatches reducer to update logs state with appropriate data
   const setStoredLogs = (logsMap: Map<string, Log[]>) => {
@@ -84,11 +67,11 @@ const LogsState = (props: any) => {
 
   // Used on Files component while delete button is clicked
   const addStoredLog = (logName: string, logsArray: Log[]) => {
-      dispatch({
-        type: ADD_LOG,
-        // Payload is array with 1st element as map key and 2nd element as value of that key
-        payload: [logName, logsArray],
-      });
+    dispatch({
+      type: ADD_LOG,
+      // Payload is array with 1st element as map key and 2nd element as value of that key
+      payload: [logName, logsArray],
+    });
   };
 
   // Used on FilesElement to set active log for other components

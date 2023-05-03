@@ -42,16 +42,16 @@ const Home = () => {
         <Col
           lg={"auto"}
           className="bg-success border border-2 border-dark p-0"
-          style={collapsed ? { width: "1.8vw" } : { width: "8.33vw" }}
+          style={collapsed ? { width: "2.5vw" } : { width: "8.33vw" }}
         >
           {/* Grid of 2 rows 1 column */}
-          <Row style={{ height: "47.5vh" }} className="align-items-top">
+          <Row style={{ height: "46vh" }} className="align-items-top">
             <Col>
               <Filters collapsed={collapsed} collapsedChanger={setCollapsed} />
             </Col>
           </Row>
 
-          <Row style={{ height: "47.5vh" }} className="border-top border-dark">
+          <Row style={{ height: "46vh" }} className="border-top border-dark">
             <Col>
               {/* Dropzone component to be reworked - needs new state for errors => alerts */}
               {/* Also needs to be secured only to accept specific format of files(potential errors) - .txt for example */}
