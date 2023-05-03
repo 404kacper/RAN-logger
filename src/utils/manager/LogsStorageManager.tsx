@@ -3,10 +3,10 @@ import Log from "../../utils/interpreter/Log";
 class LogsStorageManager {
   storagePrefix: string = "samsung-ran-logger-";
 
-  // Helper function to cleanup the code in state and make it reusable in components - parses JSON object stored in local storage - to set global state
+  // Helper function to cleanup the code in state and make it reusable in components - parses JSON object stored in local storage and returns Map object
   retrieveLogsFromStorage = (): Map<string, Log[]> => {
-    const storageObject = JSON.parse(
-      localStorage.getItem(this.storagePrefix + "files") as string
+    const storageObject = new Map<string, Log[]>(
+      JSON.parse(localStorage.getItem(this.storagePrefix + "files") as string)
     );
     const storedLogs = new Map<string, Log[]>();
 
@@ -60,9 +60,11 @@ class LogsStorageManager {
   };
 
   replaceLogsInStorage = (mapOfFiles: Map<string, Log[]>) => {
+    // console.log("Array from map passed to replaceLogsInStorage:")
+    // console.log(mapOfFiles.keys());
     localStorage.setItem(
       this.storagePrefix + "files",
-      JSON.stringify(mapOfFiles)
+      JSON.stringify(Array.from(mapOfFiles.entries()))
     );
   };
 

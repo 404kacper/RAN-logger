@@ -1,4 +1,10 @@
-import React, { Fragment, useState, useContext } from "react";
+import React, {
+  Fragment,
+  useState,
+  useContext,
+  useEffect,
+  useRef,
+} from "react";
 import { Form, Alert, Container } from "react-bootstrap";
 import {
   useDropzone,
@@ -22,6 +28,22 @@ const Files: React.FC<FilesProps> = ({ collapsed }) => {
 
   // state to set and display errors
   const [error, setError] = useState<string>("");
+
+  // useRef to keep track of the initial render
+  const isFirstRender = useRef(true);
+
+  // hook that runs after every logs state update to repalce values in local storage
+  useEffect(() => {
+    // Check if it's the initial render
+    if (isFirstRender.current) {
+      // If it's the initial render, set the ref to false and don't execute the effect
+      // To avoid writing to storage on page refresh
+      isFirstRender.current = false;
+      return;
+    }
+    logsContext.logsStorageManager.replaceLogsInStorage(logsContext.logs);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [logsContext.logs]);
 
   // method to handle user checkbox preferences
   const handleRememberFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,42 +78,41 @@ const Files: React.FC<FilesProps> = ({ collapsed }) => {
       }
     }
 
-    // Add new log files to global logs state
-    // For that create map to store file readings in format of key: file name, value: interpreted lines into Log object
-    const filesMap = new Map<string, Log[]>();
+    interface FileLog {
+      name: string;
+      logs: Log[];
+    }
 
-    // array of promises is returned - each promise represents one file reading
-    Promise.all(
-      acceptedFiles.map((file) => {
-        // creation of Promise instances for each file
-        return new Promise<void>((resolve, reject) => {
-          const reader = new FileReader();
-          // For each file create key value pair in above map
-          reader.onload = (e) => {
-            const buffer = e.target?.result as ArrayBuffer;
-            if (buffer) {
-              const decoder = new TextDecoder("utf-8");
-              const content = decoder.decode(buffer);
-              const interpreter = new LogInterpreter(content);
-              filesMap.set(file.name, interpreter.parseLogs());
-              resolve();
-            } else {
-              console.error("buffer failed to read in handleDrop");
-            }
-          };
-          // Call reader method to read file as string with behaviour defined above
-          reader.readAsArrayBuffer(file);
+    // Function that iterates through all files and returns promise that represents one file reading
+    const readFiles: Promise<FileLog>[] = acceptedFiles.map((file) => {
+      return new Promise<FileLog>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const buffer = e.target?.result as ArrayBuffer;
+          if (buffer) {
+            const decoder = new TextDecoder("utf-8");
+            const content = decoder.decode(buffer);
+            const interpreter = new LogInterpreter(content);
+            // Each resolved promise represents object with key of file name and value of log objects array
+            resolve({ name: file.name, logs: interpreter.parseLogs() });
+          } else {
+            reject(new Error("Failed to read file buffer."));
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      });
+    });
+
+    // Wait until all promises are resolved then update state with values of each promise object
+    Promise.all<FileLog>(readFiles)
+      .then((fileLogs) => {
+        // Itreate through each promise
+        fileLogs.forEach(({ name, logs }) => {
+          logsContext.addStoredLog(name, logs);
         });
       })
-    )
-      .then(() => {
-        // Saves files to local storage - as map (string, string) - key is file name, value is contents of file
-        logsContext.logsStorageManager.replaceLogsInStorage(filesMap);
-        // Store new map in local storage
-        logsContext.setStoredLogs(filesMap);
-      })
-      .catch(() => {
-        console.error("Error reading files");
+      .catch((error) => {
+        console.error("Error reading files:", error);
       });
   };
 
@@ -100,9 +121,17 @@ const Files: React.FC<FilesProps> = ({ collapsed }) => {
     keyToDelete: string,
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
-    // setFiles((prev) => prev.filter((file) => file !== fileToDelete));
-    logsContext.logsStorageManager.replaceActiveFileInStorage("");
-    logsContext.setActiveFile("");
+    if (logsContext.activeFile === keyToDelete) {
+      logsContext.logsStorageManager.replaceActiveFileInStorage("");
+      logsContext.setActiveFile("");
+    }
+
+    // Dispatch reducer to remove key from logs state
+    // And after resolving the promise update logs in storage
+    logsContext.removeStoredLog(keyToDelete).then(() => {
+      // Update logs map in storage
+      logsContext.logsStorageManager.replaceLogsInStorage(logsContext.logs);
+    });
     // Stops the event on button that was clicked - so that the parent element doesn't try setting state when inactive element is selected
     event.stopPropagation();
   };
@@ -148,7 +177,7 @@ const Files: React.FC<FilesProps> = ({ collapsed }) => {
               style={{ fontSize: "0.9rem" }}
             />
           </Form.Group>
-          {logsContext.logs.length > 0 && (
+          {logsContext.logs.size > 0 && (
             <Form.Group controlId="formFiles">
               {/* Scroll still needs to be stylized -  */}
               <div

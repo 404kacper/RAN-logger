@@ -1,15 +1,18 @@
 import { useContext, Fragment } from "react";
 import { Table, Container } from "react-bootstrap";
 import LogsContext from "../../context/logs/logsContext";
+import Log from "../../utils/interpreter/Log";
 
 const LogsList: React.FC = () => {
   const logsContext = useContext(LogsContext);
 
   // Check if active file exists in the map
-  const logs = logsContext.logs.get(logsContext.activeFile);
+  var logs: Log[] = [];
 
-  if (!logsContext.logs.has(logsContext.activeFile) || !logs) {
+  if (!logsContext.logs.has(logsContext.activeFile)) {
     return <div>No logs available.</div>;
+  } else {
+    logs = logsContext.logs.get(logsContext.activeFile);
   }
 
   const highlightMatches = (
