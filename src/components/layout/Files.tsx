@@ -79,7 +79,7 @@ const Files: React.FC<FilesProps> = ({ collapsed }) => {
     }
 
     interface FileLog {
-      name: string;
+      fileName: string;
       logs: Log[];
     }
 
@@ -94,7 +94,7 @@ const Files: React.FC<FilesProps> = ({ collapsed }) => {
             const content = decoder.decode(buffer);
             const interpreter = new LogInterpreter(content);
             // Each resolved promise represents object with key of file name and value of log objects array
-            resolve({ name: file.name, logs: interpreter.parseLogs() });
+            resolve({ fileName: file.name, logs: interpreter.parseLogs() });
           } else {
             reject(new Error("Failed to read file buffer."));
           }
@@ -107,8 +107,11 @@ const Files: React.FC<FilesProps> = ({ collapsed }) => {
     Promise.all<FileLog>(readFiles)
       .then((fileLogs) => {
         // Itreate through each promise
-        fileLogs.forEach(({ name, logs }) => {
-          logsContext.addStoredLog(name, logs);
+        fileLogs.forEach(({ fileName, logs }) => {
+          logsContext.addStoredLog(fileName, logs);
+          logs.forEach(async log => {
+            await logsContext.indexedDbStorageManager.addLog(log, fileName);
+          })
         });
       })
       .catch((error) => {
@@ -131,6 +134,7 @@ const Files: React.FC<FilesProps> = ({ collapsed }) => {
     logsContext.removeStoredLog(keyToDelete).then(() => {
       // Update logs map in storage
       logsContext.logsStorageManager.replaceLogsInStorage(logsContext.logs);
+      logsContext.indexedDbStorageManager.deleteByFileName(keyToDelete);
     });
     // Stops the event on button that was clicked - so that the parent element doesn't try setting state when inactive element is selected
     event.stopPropagation();

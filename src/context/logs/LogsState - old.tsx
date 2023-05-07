@@ -4,7 +4,6 @@ import LogsReducer from "./logsReducer";
 
 import Log from "../../utils/interpreter/Log";
 import LogsStorageManager from "../../utils/manager/LogsStorageManager";
-import IndexedDbStorageManager from "../../utils/manager/IndexedDbManager";
 
 import {
   SET_LOGS,
@@ -17,7 +16,6 @@ import {
 
 const LogsState = (props: any) => {
   const logsStorageManager = new LogsStorageManager();
-  const indexedDbStorageManager = new IndexedDbStorageManager();
 
   // Check if user wants to remember preferences and fill in state accordingly
   const getInitialState = () => {
@@ -114,7 +112,6 @@ const LogsState = (props: any) => {
         setPreferences,
         setSearchedTerm,
         logsStorageManager,
-        indexedDbStorageManager
       }}
     >
       {props.children}
