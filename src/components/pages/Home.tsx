@@ -6,6 +6,7 @@ import Files from "../layout/Files";
 import Filters from "../layout/Filters";
 import LogsList from "../layout/LogsList";
 import NavbarCentre from "../layout/NavbarCentre";
+import PanelThemeIcons from "../layout/PanelThemeIcons";
 
 import "../../App.css";
 import SearchBar from "../layout/SearchBar";
@@ -19,10 +20,10 @@ const Home = () => {
       <Row style={{ height: "8vh" }}>
         <Col
           lg={1}
-          style={{ borderRight: "1px solid" }}
-          className="border-light bg-success d-flex justify-content-start align-items-center"
+          style={{ borderRight: "1px solid" , ...{backgroundColor: "lightgray"}}}
+          className="border-light d-flex justify-content-start align-items-center"
         >
-          Place for toolbar icons
+          {/* Place for toolbar icons */}
         </Col>
         <Col
           lg={10}
@@ -33,9 +34,11 @@ const Home = () => {
         </Col>
         <Col
           lg={1}
-          className="bg-success d-flex justify-content-center align-items-center"
+          style={{backgroundColor: "lightgray"}}
+          className=" d-flex justify-content-center align-items-center"
         >
-          Place for theme icon
+          <PanelThemeIcons />
+          {/* Place for theme icon */}
         </Col>
       </Row>
       <Row style={{ height: "95vh" }}>
@@ -75,6 +78,7 @@ const Home = () => {
               <LogsList />
             </Col>
           </Row>
+          {/* <LogsList /> */}
         </Col>
       </Row>
     </Fragment>
