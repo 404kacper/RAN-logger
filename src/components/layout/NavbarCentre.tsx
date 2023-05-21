@@ -17,7 +17,20 @@ const NavbarCentre: React.FC = () => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
-          <NavItem>
+          <span style={{ fontSize: "40px", fontWeight: "bold" }}>RAN</span>
+
+          <div
+            style={{
+              width: "2px",
+              height: "60px",
+              backgroundColor: "black",
+              margin: "0 10px",
+            }}
+          />
+
+          <span style={{ fontSize: "40px"}}>Log Viewer</span>
+
+          {/* <NavItem>
             <Nav.Link
               href="#"
               className="btn btn-primary"
@@ -34,7 +47,7 @@ const NavbarCentre: React.FC = () => {
             >
               <FontAwesomeIcon icon={faSave} /> Save
             </Nav.Link>
-          </NavItem>
+          </NavItem> */}
         </Nav>
       </Navbar.Collapse>
     </Navbar>

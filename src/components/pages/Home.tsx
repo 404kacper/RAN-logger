@@ -27,8 +27,8 @@ const Home = () => {
         </Col>
         <Col
           lg={10}
-          style={{ borderRight: "1px solid" }}
-          className="border-light bg-warning d-flex justify-content-center align-items-center"
+          style={{ borderRight: "1px solid" , ...{backgroundColor: "lightgray"}}}
+          className="border-light  d-flex justify-content-start align-items-end"
         >
           <NavbarCentre />
         </Col>
@@ -66,9 +66,9 @@ const Home = () => {
           {/* Grid of 3 rows 1 column */}
           <Row
             style={{ height: "10vh" }}
-            className="align-items-center bg-danger"
+            className="align-items-center"// bg-danger"
           >
-            <Col className="d-flex justify-content-center">
+            <Col className="d-flex justify-content-end">
               {/* Place for log filters and/or search bar */}
               <SearchBar />
             </Col>
