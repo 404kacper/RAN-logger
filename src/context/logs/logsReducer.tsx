@@ -1,5 +1,7 @@
 import {
   SET_LOGS,
+  REMOVE_LOG,
+  ADD_LOG,
   SET_ACTIVE_FILE,
   SET_REMEMBER_PREFERENCES,
   SET_SEARCHED_TERM,
@@ -17,6 +19,21 @@ const logsReducer = (state: State, action: Action) => {
         ...state,
         // Assign new payload - update state
         logs: action.payload,
+      };
+    case REMOVE_LOG:
+      return {
+        ...state,
+        logs: new Map(
+          Array.from(state.logs).filter(([key]) => key !== action.payload)
+        ),
+      };
+    case ADD_LOG:
+      return {
+        ...state,
+        logs: new Map([
+          ...Array.from(state.logs),
+          [action.payload[0], action.payload[1]],
+        ]),
       };
     case SET_ACTIVE_FILE:
       return {

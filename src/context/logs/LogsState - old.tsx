@@ -111,7 +111,7 @@ const LogsState = (props: any) => {
         setActiveFile,
         setPreferences,
         setSearchedTerm,
-        logsStorageManager
+        logsStorageManager,
       }}
     >
       {props.children}

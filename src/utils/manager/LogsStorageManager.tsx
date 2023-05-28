@@ -1,29 +1,17 @@
-import Log from '../../utils/interpreter/Log';
-import LogInterpreter from '../../utils/interpreter/LogInterpreter';
+import Log from "../../utils/interpreter/Log";
 
 class LogsStorageManager {
   storagePrefix: string = "samsung-ran-logger-";
 
-  // Helper function to cleanup the code in state and make it reusable in components - parses JSON object stored in local storage - to set global state
+  // Helper function to cleanup the code in state and make it reusable in components - parses JSON object stored in local storage and returns Map object
   retrieveLogsFromStorage = (): Map<string, Log[]> => {
-    const storagePrefix: string = "samsung-ran-logger-";
-    const storageObject = JSON.parse(
-      localStorage.getItem(storagePrefix + "files") as string
+    const storageObject = new Map<string, Log[]>(
+      JSON.parse(localStorage.getItem(this.storagePrefix + "files") as string)
     );
     const storedLogs = new Map<string, Log[]>();
 
-    if (storageObject != null) {
-      // For each file interpeter creates key: value pair to store objects - file name with extension is used to retrieve the Log objects
-      storageObject.forEach((logFile: string[]) => {
-        const fileName = logFile[0];
-        const fileContents = logFile[1];
-
-        const logInterpreter = new LogInterpreter(fileContents);
-
-        const logObjects = logInterpreter.parseLogs();
-        storedLogs.set(fileName, logObjects);
-      });
-      return storedLogs;
+    if (storageObject !== null && storageObject !== undefined) {
+      return storageObject;
     } else {
       return storedLogs;
     }
@@ -31,9 +19,8 @@ class LogsStorageManager {
 
   // Helper to retrieve active files from local storage and initialize global state
   retrieveActiveFileFromStorage = (): string => {
-    const storagePrefix: string = "samsung-ran-logger-";
     const storageObject = JSON.parse(
-      localStorage.getItem(storagePrefix + "activeFile") as string
+      localStorage.getItem(this.storagePrefix + "activeFile") as string
     );
     const defaultActiveFileName: string = "";
 
@@ -46,9 +33,8 @@ class LogsStorageManager {
 
   // Helper to retrieve references from local storage and initialize global state
   retrievePreferencesFromStorage = (): boolean => {
-    const storagePrefix: string = "samsung-ran-logger-";
     const storageObject = JSON.parse(
-      localStorage.getItem(storagePrefix + "rememberFiles") as string
+      localStorage.getItem(this.storagePrefix + "rememberFiles") as string
     );
     const defaultPreferenceValue: boolean = false;
 
@@ -61,9 +47,8 @@ class LogsStorageManager {
 
   // Helper similar to activeFile retrival
   retrieveSearchedTermFromStorage = (): string => {
-    const storagePrefix: string = "samsung-ran-logger-";
     const storageObject = JSON.parse(
-      localStorage.getItem(storagePrefix + "searchedTerm") as string
+      localStorage.getItem(this.storagePrefix + "searchedTerm") as string
     );
     const defaultSearchedTerm: string = "";
 
@@ -74,7 +59,9 @@ class LogsStorageManager {
     }
   };
 
-  replaceLogsInStorage = (mapOfFiles: Map<string, string>) => {
+  replaceLogsInStorage = (mapOfFiles: Map<string, Log[]>) => {
+    // console.log("Array from map passed to replaceLogsInStorage:")
+    // console.log(mapOfFiles.keys());
     localStorage.setItem(
       this.storagePrefix + "files",
       JSON.stringify(Array.from(mapOfFiles.entries()))

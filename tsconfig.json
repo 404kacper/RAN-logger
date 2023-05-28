@@ -13,11 +13,11 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
+    "module": "es6", //change to esnext for react workflow
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false, //change to true for react workflow
     "jsx": "react-jsx"
   },
   "include": [
