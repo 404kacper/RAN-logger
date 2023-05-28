@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const InlineSourcePlugin = require('inline-source-webpack-plugin');
 
 module.exports = {
   entry: './src/index.tsx',
@@ -25,7 +26,9 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './public/index.html',
+      inlineSource: 'bundle.js',
     }),
+    new InlineSourcePlugin(),
   ],
   devServer: {
     static: path.join(__dirname, 'dist'),
