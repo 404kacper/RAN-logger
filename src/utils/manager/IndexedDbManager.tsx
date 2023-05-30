@@ -4,13 +4,16 @@ import Log from '../../utils/interpreter/Log';
 class IndexedDbStorageManager {
   storagePrefix: string = 'samsung-ran-logger-';
   db: any;
+  isReady: boolean = false;
 
   constructor() {
+    console.log("Rendered new dbManager instance");
     this.db = new Dexie('LogsDatabase');
     // to keep persistance of schemas (after refresh db won't have any schemas) - there is need to read them from db
     this.initTableSchemas().then(() => {
       this.closeOnPageRefresh();
       this.getAllTableNames().then((value) => {
+        this.isReady = true;
         // console.log(value);
       });
     });
@@ -42,8 +45,8 @@ class IndexedDbStorageManager {
       },
       {}
     );
-
-    await this.db.close(); // Close the current connection to perform upgrade
+    // Close the current connection to perform upgrade
+    await this.db.close();
 
     // This will output "blocked by other connection error"
     // before closeOnPageRefresh has chance to close the connection, another instance of IndexedDbStorageManager is instantiated after page refresh which will update the version
@@ -82,6 +85,11 @@ class IndexedDbStorageManager {
     }
     // Reopen db to account for new table
     await this.db.open();
+  }
+
+  // Method to check the whether IndexedDB is done initializing schemas
+  getIsReady() {
+    return this.isReady;
   }
 
   // Helper that returns all table names - this.db.tables is synchronous so there is no need for async keyword

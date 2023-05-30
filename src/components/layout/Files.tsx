@@ -1,9 +1,4 @@
-import React, {
-  Fragment,
-  useState,
-  useContext,
-  useEffect,
-} from 'react';
+import React, { Fragment, useState, useContext, useEffect } from 'react';
 import { Form, Alert, Container } from 'react-bootstrap';
 import {
   useDropzone,
@@ -33,9 +28,11 @@ const Files: React.FC<FilesProps> = ({ collapsed }) => {
   const [error, setError] = useState<string>('');
   // dexie states
   const tableNames = useLiveQuery(async () => {
-    console.log(await dbContext.indexedDbStorageManager.getAllTableNames());
-    return await dbContext.indexedDbStorageManager.getAllTableNames();
-  }, [dbContext.indexedDbStorageManager])
+    if (dbContext.dbIsReady) {
+      return await dbContext.indexedDbStorageManager.getAllTableNames();
+    }
+    return [];
+  }, [dbContext.dbIsReady]);
 
   // hook that runs after every logs state update to repalce values in local storage
   useEffect(() => {

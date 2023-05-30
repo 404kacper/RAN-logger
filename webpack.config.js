@@ -30,6 +30,7 @@ module.exports = {
     }),
     new InlineSourcePlugin(),
   ],
+  devtool: "source-map",
   devServer: {
     static: path.join(__dirname, 'dist'),
     compress: true,
