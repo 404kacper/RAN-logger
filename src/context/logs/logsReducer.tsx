@@ -5,10 +5,12 @@ import {
   SET_ACTIVE_FILE,
   SET_REMEMBER_PREFERENCES,
   SET_SEARCHED_TERM,
-} from "../types";
+  SET_DB_READY,
+  SET_FILE_NAMES,
+} from '../types';
 
-import { State } from "./interfaces/StateInterface";
-import { Action } from "./interfaces/ActionInterface";
+import { State } from './interfaces/StateInterface';
+import { Action } from './interfaces/ActionInterface';
 
 const logsReducer = (state: State, action: Action) => {
   // Used to update logs state everytime App component is reloaded
@@ -49,6 +51,16 @@ const logsReducer = (state: State, action: Action) => {
       return {
         ...state,
         searchedTerm: action.payload,
+      };
+    case SET_DB_READY:
+      return {
+        ...state,
+        dbIsReady: action.payload,
+      };
+    case SET_FILE_NAMES:
+      return {
+        ...state,
+        fileNames: action.payload,
       };
     default:
       return state;

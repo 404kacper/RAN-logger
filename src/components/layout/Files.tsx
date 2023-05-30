@@ -14,8 +14,6 @@ import Dropzone from './Dropzone';
 import FileIcon from '../../assets/FileIcon';
 import Log from '../../utils/interpreter/Log';
 
-import { useLiveQuery } from 'dexie-react-hooks';
-
 interface FilesProps {
   collapsed: boolean;
 }
@@ -26,13 +24,14 @@ const Files: React.FC<FilesProps> = ({ collapsed }) => {
 
   // state to set and display errors
   const [error, setError] = useState<string>('');
-  // dexie states
-  const tableNames = useLiveQuery(async () => {
-    if (dbContext.dbIsReady) {
-      return await dbContext.indexedDbStorageManager.getAllTableNames();
-    }
-    return [];
-  }, [dbContext.dbIsReady]);
+
+  // set tableNames to what's in context - default will be empty string array
+  var tableNames = logsContext.fileNames;
+
+  useEffect(() => {
+    // Update fileNames whenever state changes
+    tableNames = logsContext.fileNames;
+  }, [logsContext.fileNames]);
 
   // hook that runs after every logs state update to repalce values in local storage
   useEffect(() => {
@@ -106,6 +105,7 @@ const Files: React.FC<FilesProps> = ({ collapsed }) => {
         // Iterate through each promise
         for (const { fileName, logs } of fileLogs) {
           await dbContext.indexedDbStorageManager.addLogs(logs, fileName);
+          // Start here - added files need to be handled separately - an extra dispatch in LogsState will probably be necassary
         }
       })
       .catch((error) => {

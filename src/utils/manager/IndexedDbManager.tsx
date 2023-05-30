@@ -7,15 +7,13 @@ class IndexedDbStorageManager {
   isReady: boolean = false;
 
   constructor() {
-    console.log("Rendered new dbManager instance");
+    console.log('Rendered new dbManager instance');
     this.db = new Dexie('LogsDatabase');
     // to keep persistance of schemas (after refresh db won't have any schemas) - there is need to read them from db
     this.initTableSchemas().then(() => {
       this.closeOnPageRefresh();
-      this.getAllTableNames().then((value) => {
-        this.isReady = true;
-        // console.log(value);
-      });
+      this.getAllTableNames();
+      this.isReady = true;
     });
   }
 
@@ -35,7 +33,7 @@ class IndexedDbStorageManager {
         throw error;
       }
     }
-    const tableNames = await this.getAllTableNames();
+    const tableNames = this.getAllTableNames();
 
     const previousStores = tableNames.reduce(
       (acc: { [key: string]: string }, tableName) => {
@@ -82,9 +80,10 @@ class IndexedDbStorageManager {
       this.db.version(this.db.verno + 1).stores({
         [fileName]: '++storageId,id,time,from,to,id_to,level,code,description',
       });
+
+      // Reopen db to account for new table
+      await this.db.open();
     }
-    // Reopen db to account for new table
-    await this.db.open();
   }
 
   // Method to check the whether IndexedDB is done initializing schemas
@@ -93,7 +92,7 @@ class IndexedDbStorageManager {
   }
 
   // Helper that returns all table names - this.db.tables is synchronous so there is no need for async keyword
-  async getAllTableNames(): Promise<string[]> {
+  getAllTableNames(): string[] {
     return this.db.tables.map((table: Dexie.Table) => table.name);
   }
 
