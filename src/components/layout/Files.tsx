@@ -33,13 +33,6 @@ const Files: React.FC<FilesProps> = ({ collapsed }) => {
     tableNames = logsContext.fileNames;
   }, [logsContext.fileNames]);
 
-  // hook that runs after every logs state update to repalce values in local storage
-  useEffect(() => {
-    // Check if it's the initial render
-    logsContext.logsStorageManager.replaceLogsInStorage(logsContext.logs);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [logsContext.logs]);
-
   // method to handle user checkbox preferences
   const handleRememberFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     const decision = e.target.checked;
@@ -104,8 +97,10 @@ const Files: React.FC<FilesProps> = ({ collapsed }) => {
       .then(async (fileLogs) => {
         // Iterate through each promise
         for (const { fileName, logs } of fileLogs) {
+          // Add log with name to db
           await dbContext.indexedDbStorageManager.addLogs(logs, fileName);
-          // Start here - added files need to be handled separately - an extra dispatch in LogsState will probably be necassary
+          // Store name in context to display 
+          logsContext.addedLogToDb(fileName);
         }
       })
       .catch((error) => {

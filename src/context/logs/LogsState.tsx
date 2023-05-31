@@ -4,41 +4,40 @@ import DbContext from '../db/dbContext';
 import LogsReducer from './logsReducer';
 
 import Log from '../../utils/interpreter/Log';
-import LogsStorageManager from '../../utils/manager/LogsStorageManager';
 
 import {
-  SET_LOGS,
-  REMOVE_LOG,
-  ADD_LOG,
   SET_ACTIVE_FILE,
   SET_REMEMBER_PREFERENCES,
   SET_SEARCHED_TERM,
   SET_DB_READY,
-  SET_FILE_NAMES
+  SET_FILE_NAMES,
+  ADD_FILE_NAME,
 } from '../types';
 
 const LogsState = (props: any) => {
-  const logsStorageManager = new LogsStorageManager();
   // Context for db instance - it's purpose is that when LogsState re-renders new instance of IndexedDbManager isn't created
   const dbContext = useContext(DbContext);
 
   // Check if user wants to remember preferences and fill in state accordingly
   const getInitialState = () => {
-    const preferencesFromStorage =
-      logsStorageManager.retrievePreferencesFromStorage();
+    const preferencesFromStorage = true;
+      // logsStorageManager.retrievePreferencesFromStorage();
 
-    if (!preferencesFromStorage) {
-      logsStorageManager.replaceLogsInStorage(new Map<string, Log[]>());
-      logsStorageManager.replaceActiveFileInStorage('');
-      logsStorageManager.replaceSearchedTermInStorage('');
-    }
+    // if (!preferencesFromStorage) {
+    //   logsStorageManager.replaceLogsInStorage(new Map<string, Log[]>());
+    //   logsStorageManager.replaceActiveFileInStorage('');
+    //   logsStorageManager.replaceSearchedTermInStorage('');
+    // }
 
     return preferencesFromStorage
       ? {
-          logs: logsStorageManager.retrieveLogsFromStorage(),
-          activeFile: logsStorageManager.retrieveActiveFileFromStorage(),
+          // logs: logsStorageManager.retrieveLogsFromStorage(),
+          // activeFile: logsStorageManager.retrieveActiveFileFromStorage(),
+          logs: new Map<string, Log[]>(),
+          activeFile: '',
           rememberPreferences: preferencesFromStorage,
-          searchedTerm: logsStorageManager.retrieveSearchedTermFromStorage(),
+          // searchedTerm: logsStorageManager.retrieveSearchedTermFromStorage(),
+          searchedTerm: '',
           dbIsReady: false,
           fileNames: [],
         }
@@ -69,7 +68,7 @@ const LogsState = (props: any) => {
     }, 100);
   }, [dbContext.indexedDbStorageManager]);
 
-  // Hook that runs after db is done initialising and logsState has dbIsReady set to true - sets file names to whats stored in indexedDB
+  // Hook that runs after db is done initialising and logsState has dbIsReady set to true - sets file names (on initial run with right conditions) to whats stored in indexedDB
   useEffect(() => {
     if (state.dbIsReady) {
       dispatch({
@@ -81,30 +80,31 @@ const LogsState = (props: any) => {
 
   // Used on App component initialization - dispatches reducer to update logs state with appropriate data
   const setStoredLogs = (logsMap: Map<string, Log[]>) => {
-    dispatch({
-      type: SET_LOGS,
-      payload: logsMap,
-    });
+    // dispatch({
+    //   type: SET_LOGS,
+    //   payload: logsMap,
+    // });
   };
 
   // Used on Files component while delete button is clicked
   const removeStoredLog = (logName: string) => {
     // Needs a promise since state dispatches are asynchronous
     return new Promise<void>((resolve) => {
-      dispatch({
-        type: REMOVE_LOG,
-        payload: logName,
-      });
+      // dispatch({
+      //   type: REMOVE_LOG,
+      //   payload: logName,
+      // });
       resolve();
     });
   };
 
-  // Used on Files component while delete button is clicked
-  const addStoredLog = (logName: string, logsArray: Log[]) => {
+  // Used on Files component while dropping files
+  const addedLogToDb = (fileNames: string[]) => {
+    // stopped here implement it in files component on file dropped
     dispatch({
-      type: ADD_LOG,
+      type: ADD_FILE_NAME,
       // Payload is array with 1st element as map key and 2nd element as value of that key
-      payload: [logName, logsArray],
+      payload: fileNames,
     });
   };
 
@@ -141,13 +141,12 @@ const LogsState = (props: any) => {
         searchedTerm: state.searchedTerm,
         dbIsReady: state.dbIsReady,
         fileNames: state.fileNames,
+        addedLogToDb,
         setStoredLogs,
         removeStoredLog,
-        addStoredLog,
         setActiveFile,
         setPreferences,
         setSearchedTerm,
-        logsStorageManager,
       }}
     >
       {props.children}
