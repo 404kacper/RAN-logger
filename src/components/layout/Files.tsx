@@ -97,10 +97,13 @@ const Files: React.FC<FilesProps> = ({ collapsed }) => {
       .then(async (fileLogs) => {
         // Iterate through each promise
         for (const { fileName, logs } of fileLogs) {
-          // Add log with name to db
-          await dbContext.indexedDbStorageManager.addLogs(logs, fileName);
-          // Store name in context to display 
-          logsContext.addedLogToDb(fileName);
+          // Only if there are logs in file - implaction from DbManager implementation - only non-empty tables will be displayed
+          if (logs.length > 0) {
+            // Add log with name to db
+            await dbContext.indexedDbStorageManager.addLogs(logs, fileName);
+            // Store name in context to display
+            logsContext.addedLogToDb(fileName);
+          }
         }
       })
       .catch((error) => {
@@ -110,16 +113,17 @@ const Files: React.FC<FilesProps> = ({ collapsed }) => {
 
   // method to handle file deletion
   const handleDelete = async (
-    keyToDelete: string,
+    fileToDelete: string,
     event: React.MouseEvent<HTMLButtonElement>
   ) => {
-    if (logsContext.activeFile === keyToDelete) {
+    if (logsContext.activeFile === fileToDelete) {
       logsContext.logsStorageManager.replaceActiveFileInStorage('');
       logsContext.setActiveFile('');
     }
-
     // Remove records but preserve table
-    await dbContext.indexedDbStorageManager.deleteByFileName(keyToDelete);
+    await dbContext.indexedDbStorageManager.deleteTableByFileName(fileToDelete);
+    // Account for changes in ui
+    logsContext.removedLogFromDb(fileToDelete);
     // Stops the event on button that was clicked - so that the parent element doesn't try setting state when inactive element is selected
     event.stopPropagation();
   };

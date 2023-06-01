@@ -15,7 +15,6 @@ const FilesElement: React.FC<FilesElementProps> = ({fileName, onClickDelete}) =>
     const [isActive, setIsActive] = useState(false);
 
     const handleOnClick = () => {
-        logsContext.logsStorageManager.replaceActiveFileInStorage(fileName);
         logsContext.setActiveFile(fileName);
     }
 

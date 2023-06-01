@@ -12,6 +12,7 @@ import {
   SET_DB_READY,
   SET_FILE_NAMES,
   ADD_FILE_NAME,
+  DELETE_FILE_NAME
 } from '../types';
 
 const LogsState = (props: any) => {
@@ -21,7 +22,7 @@ const LogsState = (props: any) => {
   // Check if user wants to remember preferences and fill in state accordingly
   const getInitialState = () => {
     const preferencesFromStorage = true;
-      // logsStorageManager.retrievePreferencesFromStorage();
+    // logsStorageManager.retrievePreferencesFromStorage();
 
     // if (!preferencesFromStorage) {
     //   logsStorageManager.replaceLogsInStorage(new Map<string, Log[]>());
@@ -71,32 +72,17 @@ const LogsState = (props: any) => {
   // Hook that runs after db is done initialising and logsState has dbIsReady set to true - sets file names (on initial run with right conditions) to whats stored in indexedDB
   useEffect(() => {
     if (state.dbIsReady) {
-      dispatch({
-        type: SET_FILE_NAMES,
-        payload: dbContext.indexedDbStorageManager.getAllTableNames(),
-      });
+      // getAllNonEmptyTableNames is asynchronous so in order to await in hook immediately invoked async function needs to be called
+      (async () => {
+        const fetchedTableNames =
+          await dbContext.indexedDbStorageManager.getAllNonEmptyTableNames();
+        dispatch({
+          type: SET_FILE_NAMES,
+          payload: fetchedTableNames,
+        });
+      })();
     }
   }, [state.dbIsReady]);
-
-  // Used on App component initialization - dispatches reducer to update logs state with appropriate data
-  const setStoredLogs = (logsMap: Map<string, Log[]>) => {
-    // dispatch({
-    //   type: SET_LOGS,
-    //   payload: logsMap,
-    // });
-  };
-
-  // Used on Files component while delete button is clicked
-  const removeStoredLog = (logName: string) => {
-    // Needs a promise since state dispatches are asynchronous
-    return new Promise<void>((resolve) => {
-      // dispatch({
-      //   type: REMOVE_LOG,
-      //   payload: logName,
-      // });
-      resolve();
-    });
-  };
 
   // Used on Files component while dropping files
   const addedLogToDb = (fileNames: string[]) => {
@@ -105,6 +91,16 @@ const LogsState = (props: any) => {
       type: ADD_FILE_NAME,
       // Payload is array with 1st element as map key and 2nd element as value of that key
       payload: fileNames,
+    });
+  };
+
+  // Used on Files component while delete button is clicked
+  const removedLogFromDb = (logName: string) => {
+    // stopped here implement it in files component on file dropped
+    dispatch({
+      type: DELETE_FILE_NAME,
+      // Payload is array with 1st element as map key and 2nd element as value of that key
+      payload: logName,
     });
   };
 
@@ -142,8 +138,7 @@ const LogsState = (props: any) => {
         dbIsReady: state.dbIsReady,
         fileNames: state.fileNames,
         addedLogToDb,
-        setStoredLogs,
-        removeStoredLog,
+        removedLogFromDb,
         setActiveFile,
         setPreferences,
         setSearchedTerm,

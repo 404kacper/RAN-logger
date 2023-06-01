@@ -5,6 +5,7 @@ import {
   SET_DB_READY,
   SET_FILE_NAMES,
   ADD_FILE_NAME,
+  DELETE_FILE_NAME,
 } from '../types';
 
 import { State } from './interfaces/StateInterface';
@@ -13,28 +14,6 @@ import { Action } from './interfaces/ActionInterface';
 const logsReducer = (state: State, action: Action) => {
   // Used to update logs state everytime App component is reloaded
   switch (action.type) {
-    // case SET_LOGS:
-    //   return {
-    //     // Copy state
-    //     ...state,
-    //     // Assign new payload - update state
-    //     logs: action.payload,
-    //   };
-    // case REMOVE_LOG:
-    //   return {
-    //     ...state,
-    //     logs: new Map(
-    //       Array.from(state.logs).filter(([key]) => key !== action.payload)
-    //     ),
-    //   };
-    // case ADD_LOG:
-    //   return {
-    //     ...state,
-    //     logs: new Map([
-    //       ...Array.from(state.logs),
-    //       [action.payload[0], action.payload[1]],
-    //     ]),
-    //   };
     case SET_ACTIVE_FILE:
       return {
         ...state,
@@ -64,6 +43,13 @@ const logsReducer = (state: State, action: Action) => {
       return {
         ...state,
         fileNames: [...state.fileNames, action.payload],
+      };
+    case DELETE_FILE_NAME:
+      return {
+        ...state,
+        fileNames: state.fileNames.filter(
+          (fileName) => fileName !== action.payload
+        ),
       };
     default:
       return state;

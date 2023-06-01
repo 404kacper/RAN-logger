@@ -4,3 +4,4 @@ export const SET_SEARCHED_TERM = 'SET_SEARCHED_TERM';
 export const SET_DB_READY = 'SET_DB_READY';
 export const SET_FILE_NAMES = 'SET_FILE_NAMES';
 export const ADD_FILE_NAME = 'ADD_FILE_NAME';
+export const DELETE_FILE_NAME = 'DELETE_FILE_NAME';

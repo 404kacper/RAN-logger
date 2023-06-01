@@ -24,12 +24,20 @@ class IndexedDbStorageManager {
       await this.db.open();
     } catch (error: any) {
       if (error.name === 'NoSuchDatabaseError') {
+        const dbNames = await Dexie.getDatabaseNames();
+        let dbVersion = 1;
+        // If database already exists use it's version number instead of setting it to 1
+        if (dbNames.includes('LogsDatabase')) {
+          const tempDb = new Dexie('LogsDatabase');
+          await tempDb.open();
+          dbVersion = tempDb.verno;
+          await tempDb.close();
+        }
         // Setup empty stores and intial version of db - and open connection
-        this.db.version(1).stores({});
+        this.db.version(dbVersion).stores({});
         await this.db.open();
         return;
       } else {
-        console.log(this.db.isOpen());
         throw error;
       }
     }
@@ -64,9 +72,6 @@ class IndexedDbStorageManager {
 
   // Helper to check if table for given file already exists
   tableExists(fileName: string): boolean {
-    // start here this method and in files - rendering file components isn't guaranteed at all
-    // db is rested after refresh so it loses all schemas - no persistance
-    // there is need to "teach" code how to interpret schemas that are already defined in db or read them if they exist
     return this.db.tables.some((table: Dexie.Table) => table.name === fileName);
   }
 
@@ -92,8 +97,28 @@ class IndexedDbStorageManager {
   }
 
   // Helper that returns all table names - this.db.tables is synchronous so there is no need for async keyword
-  getAllTableNames(): string[] {
+  private getAllTableNames(): string[] {
     return this.db.tables.map((table: Dexie.Table) => table.name);
+  }
+
+  // Helper that returns all names for non empty tables - similar to above
+  async getAllNonEmptyTableNames(): Promise<string[]> {
+    // Get all table names
+    const allTableNames = this.getAllTableNames();
+
+    // Create an array to hold the names of non-empty tables
+    let nonEmptyTableNames: string[] = [];
+
+    // Check each table to see if it's empty
+    for (const tableName of allTableNames) {
+      const count = await this.db.table(tableName).count();
+      if (count > 0) {
+        nonEmptyTableNames.push(tableName);
+      }
+    }
+
+    // Return the names of non-empty tables
+    return nonEmptyTableNames;
   }
 
   async addLog(log: Log, fileName: string) {
@@ -117,11 +142,14 @@ class IndexedDbStorageManager {
   }
 
   // Could also remove tables from storage but that would require version updates, thus it should be more efficent by just leaving them empty
-  async deleteByFileName(fileName: string) {
+  async deleteTableByFileName(fileName: string) {
     // Check if the table for the given fileName exists
     if (this.tableExists(fileName)) {
       // Delete all records in the table with the given fileName
       await this.db[fileName].clear();
+      // The table itself is not removed - different method of this class is used in LogsState to fetch non-empty tables
+      // To remove the table there would be need to update version and keep dummy table when deleting last table - to keep schema/store persistance and maintain correct version
+      // And that solution takes a while longer to implement (keep in mind initialization in constructor and all the errors that could occur)
     }
   }
 }
