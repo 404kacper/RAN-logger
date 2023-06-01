@@ -30,6 +30,12 @@ const SearchBar: React.FC = () => {
       <Button variant="primary" onClick={handleSearch} className="ml-2">
         Search
       </Button>
+      <Button variant="primary" onClick={handleSearch} className="ml-2">
+        Search
+      </Button>
+      <Button variant="primary" onClick={handleSearch} className="ml-2">
+        Search
+      </Button>
     </div>
   );
 };

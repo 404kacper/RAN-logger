@@ -5,37 +5,24 @@ import { useState } from "react";
 import Files from "../layout/Files";
 import Filters from "../layout/Filters";
 import LogsList from "../layout/LogsList";
-import NavbarCentre from "../layout/NavbarCentre";
-
+import NavbarCentre from "../layout/Navbar";
 import "../../App.css";
 import SearchBar from "../layout/SearchBar";
 
 const Home = () => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
 
+
   return (
     <Fragment>
       {/* Initial grid = Row 1 - 3 Col | Row 2 - 2 Col - second row is further divided */}
       <Row style={{ height: "8vh" }}>
         <Col
-          lg={1}
+          //lg={10}
           style={{ borderRight: "1px solid" }}
-          className="border-light bg-success d-flex justify-content-start align-items-center"
-        >
-          Place for toolbar icons
-        </Col>
-        <Col
-          lg={10}
-          style={{ borderRight: "1px solid" }}
-          className="border-light bg-warning d-flex justify-content-center align-items-center"
+          className="border-dark bg-light d-flex"
         >
           <NavbarCentre />
-        </Col>
-        <Col
-          lg={1}
-          className="bg-success d-flex justify-content-center align-items-center"
-        >
-          Place for theme icon
         </Col>
       </Row>
       <Row style={{ height: "95vh" }}>
@@ -62,10 +49,10 @@ const Home = () => {
         <Col style={{ backgroundColor: "lightgray" }}>
           {/* Grid of 3 rows 1 column */}
           <Row
-            style={{ height: "10vh" }}
+            style={{ height: "10vh", left:"70rem"}}
             className="align-items-center bg-danger"
           >
-            <Col className="d-flex justify-content-center">
+            <Col className="d-flex justify-content-end">
               {/* Place for log filters and/or search bar */}
               <SearchBar />
             </Col>
