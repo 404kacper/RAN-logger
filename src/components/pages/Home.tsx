@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Container } from "react-bootstrap";
 import { useState } from "react";
 
 import Files from "../layout/Files";
@@ -14,43 +14,33 @@ const Home = () => {
 
 
   return (
-    <Fragment>
-      {/* Initial grid = Row 1 - 3 Col | Row 2 - 2 Col - second row is further divided */}
-      <Row style={{ height: "8vh" }}>
+    <Fragment >
+      {/* Initial grid = Row 1 - 1 Col | Row 1 - 2 Col - second row is further divided */}
+      <Row style={{ height: "8vh"}}>
         <Col
           //lg={10}
-          style={{ borderRight: "1px solid" }}
-          className="border-dark bg-light d-flex"
+          className="bg-white d-flex"
         >
           <NavbarCentre />
         </Col>
       </Row>
-      <Row style={{ height: "95vh" }}>
+      <Row style={{ height: "95vh" }} className="align-items-top">
         <Col
           lg={"auto"}
-          className="bg-success border border-2 border-dark p-0"
-          style={collapsed ? { width: "1.8vw" } : { width: "8.33vw" }}
+          className="p-0"
         >
-          {/* Grid of 2 rows 1 column */}
-          <Row style={{ height: "47.5vh" }} className="align-items-top">
-            <Col>
-              <Filters collapsed={collapsed} collapsedChanger={setCollapsed} />
-            </Col>
-          </Row>
-
-          <Row style={{ height: "47.5vh" }} className="border-top border-dark">
-            <Col>
-              {/* Dropzone component to be reworked - needs new state for errors => alerts */}
-              {/* Also needs to be secured only to accept specific format of files(potential errors) - .txt for example */}
-              <Files collapsed={collapsed} />
-            </Col>
-          </Row>
+          {/* Dropzone component to be reworked - needs new state for errors => alerts */}
+          {/* Also needs to be secured only to accept specific format of files(potential errors) - .txt for example */}
+          <Files collapsed={collapsed} />
         </Col>
-        <Col style={{ backgroundColor: "lightgray" }}>
+        <Col  lg={"auto"} style={{ width: "0.8vw", backgroundColor: "rgb(248,248,248)" }} className="p-0">
+            <Filters collapsed={collapsed} collapsedChanger={setCollapsed}/>
+        </Col>
+        <Col style={{ backgroundColor: "rgb(248,248,248)" }}>
           {/* Grid of 3 rows 1 column */}
           <Row
             style={{ height: "10vh", left:"70rem"}}
-            className="align-items-center bg-danger"
+            className="align-items-center"
           >
             <Col className="d-flex justify-content-end">
               {/* Place for log filters and/or search bar */}

@@ -132,7 +132,7 @@ const Files: React.FC<FilesProps> = ({collapsed}) => {
   } = useDropzone({ onDrop: handleDrop });
 
   return (
-    <Container className='py-2 files'>
+    <Container className='py-2 files' style={{backgroundColor:"rgb(236,236,236"}}>
       {collapsed ? null : (
         <Fragment>
             <div className="d-flex justify-content-start mb-2">
