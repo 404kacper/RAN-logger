@@ -4,8 +4,8 @@ import Log from '../../../utils/interpreter/Log';
 export interface State {
   logs: Map<string, Log[]>;
   activeFile: string;
-  rememberPreferences: boolean;
   searchedTerm: string;
   dbIsReady: boolean;
   fileNames: string[];
+  errors: string[];
 }

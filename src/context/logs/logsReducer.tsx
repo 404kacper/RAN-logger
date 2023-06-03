@@ -1,11 +1,12 @@
 import {
   SET_ACTIVE_FILE,
-  SET_REMEMBER_PREFERENCES,
   SET_SEARCHED_TERM,
   SET_DB_READY,
   SET_FILE_NAMES,
   ADD_FILE_NAME,
   DELETE_FILE_NAME,
+  ADD_ERROR,
+  DELETE_ERROR,
 } from '../types';
 
 import { State } from './interfaces/StateInterface';
@@ -18,11 +19,6 @@ const logsReducer = (state: State, action: Action) => {
       return {
         ...state,
         activeFile: action.payload,
-      };
-    case SET_REMEMBER_PREFERENCES:
-      return {
-        ...state,
-        rememberPreferences: action.payload,
       };
     case SET_SEARCHED_TERM:
       return {
@@ -49,6 +45,18 @@ const logsReducer = (state: State, action: Action) => {
         ...state,
         fileNames: state.fileNames.filter(
           (fileName) => fileName !== action.payload
+        ),
+      };
+    case ADD_ERROR:
+      return {
+        ...state,
+        errors: [...state.errors, action.payload],
+      };
+    case DELETE_ERROR:
+      return {
+        ...state,
+        errors: state.errors.filter(
+          (storedErrorMessage) => storedErrorMessage !== action.payload
         ),
       };
     default:

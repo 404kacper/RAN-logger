@@ -2,54 +2,37 @@ import { useReducer, useEffect, useContext } from 'react';
 import LogsContext from './logsContext';
 import DbContext from '../db/dbContext';
 import LogsReducer from './logsReducer';
+import LocalStorageManager from '../../utils/manager/LocalStorageManager';
 
 import Log from '../../utils/interpreter/Log';
 
 import {
   SET_ACTIVE_FILE,
-  SET_REMEMBER_PREFERENCES,
   SET_SEARCHED_TERM,
   SET_DB_READY,
   SET_FILE_NAMES,
   ADD_FILE_NAME,
-  DELETE_FILE_NAME
+  DELETE_FILE_NAME,
+  ADD_ERROR,
+  DELETE_ERROR,
 } from '../types';
 
 const LogsState = (props: any) => {
   // Context for db instance - it's purpose is that when LogsState re-renders new instance of IndexedDbManager isn't created
   const dbContext = useContext(DbContext);
+  const localStorageManager = new LocalStorageManager();
 
   // Check if user wants to remember preferences and fill in state accordingly
   const getInitialState = () => {
-    const preferencesFromStorage = true;
-    // logsStorageManager.retrievePreferencesFromStorage();
-
-    // if (!preferencesFromStorage) {
-    //   logsStorageManager.replaceLogsInStorage(new Map<string, Log[]>());
-    //   logsStorageManager.replaceActiveFileInStorage('');
-    //   logsStorageManager.replaceSearchedTermInStorage('');
-    // }
-
-    return preferencesFromStorage
-      ? {
-          // logs: logsStorageManager.retrieveLogsFromStorage(),
-          // activeFile: logsStorageManager.retrieveActiveFileFromStorage(),
-          logs: new Map<string, Log[]>(),
-          activeFile: '',
-          rememberPreferences: preferencesFromStorage,
-          // searchedTerm: logsStorageManager.retrieveSearchedTermFromStorage(),
-          searchedTerm: '',
-          dbIsReady: false,
-          fileNames: [],
-        }
-      : {
-          logs: new Map<string, Log[]>(),
-          activeFile: '',
-          rememberPreferences: false,
-          searchedTerm: '',
-          dbIsReady: false,
-          fileNames: [],
-        };
+    return {
+      logs: new Map<string, Log[]>(),
+      activeFile: localStorageManager.retrieveActiveFileFromStorage(),
+      // searchedTerm: logsStorageManager.retrieveSearchedTermFromStorage(),
+      searchedTerm: '',
+      dbIsReady: false,
+      fileNames: [],
+      errors: [],
+    };
   };
 
   const [state, dispatch] = useReducer(LogsReducer, getInitialState());
@@ -99,7 +82,6 @@ const LogsState = (props: any) => {
     // stopped here implement it in files component on file dropped
     dispatch({
       type: DELETE_FILE_NAME,
-      // Payload is array with 1st element as map key and 2nd element as value of that key
       payload: logName,
     });
   };
@@ -112,12 +94,21 @@ const LogsState = (props: any) => {
     });
   };
 
-  // Used on FilesElement to set active log for other components
-  const setPreferences = (rememberPreferences: boolean) => {
+  const addError = (errorMessage: string) => {
+    // Simple implementation right now - store error message and remove it by that error message
+    // Only isses is when there will be two errors with same message in context - but for now that's not the priority
+    // If above happens both errors with same messages will be cleaned
     dispatch({
-      type: SET_REMEMBER_PREFERENCES,
-      payload: rememberPreferences,
+      type: ADD_ERROR,
+      payload: errorMessage,
     });
+    // Clean added error after 4 seconds
+    setTimeout(() => {
+      dispatch({
+        type: DELETE_ERROR,
+        payload: errorMessage,
+      });
+    }, 4000);
   };
 
   // Used on FilesElement to set active log for other components
@@ -133,15 +124,16 @@ const LogsState = (props: any) => {
       value={{
         logs: state.logs,
         activeFile: state.activeFile,
-        rememberPreferences: state.rememberPreferences,
         searchedTerm: state.searchedTerm,
         dbIsReady: state.dbIsReady,
         fileNames: state.fileNames,
+        errors: state.errors,
+        localStorageManager,
         addedLogToDb,
         removedLogFromDb,
         setActiveFile,
-        setPreferences,
         setSearchedTerm,
+        addError,
       }}
     >
       {props.children}
