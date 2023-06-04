@@ -21,7 +21,7 @@ class LogInterpreter {
       if (parsedLog !== undefined) {
         fileLogs.push(parsedLog);
       }
-    })
+    });
     return fileLogs;
   }
 
@@ -31,7 +31,9 @@ class LogInterpreter {
 
     if (matches !== null) {
       // Split each element delimited by | character, also remove first and last character which will always be brackets
-      const logParts = matches[0].substring(1, matches[0].length - 1).split("|");
+      const logParts = matches[0]
+        .substring(1, matches[0].length - 1)
+        .split('|');
       const code_1 = parseInt(logParts[0]);
       const time = logParts[1];
       const code_2 = logParts[2];
@@ -41,9 +43,17 @@ class LogInterpreter {
       const code_5 = logParts[6];
       const message = fileLine.substr(matches[0].length);
 
-      return new Log(code_1, time, code_2, code_3, code_4, type, code_5, message);
-    }
-    else{
+      return new Log(
+        code_1,
+        time,
+        code_2,
+        code_3,
+        code_4,
+        type,
+        code_5,
+        message
+      );
+    } else {
       console.log("Couldn't parse line to Log object");
     }
   }

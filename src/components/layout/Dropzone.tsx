@@ -1,7 +1,5 @@
 import { Fragment, useContext } from 'react';
 import DropzoneIcon from '../../assets/DropzoneIcon';
-
-
 import LogInterpreter from '../../utils/interpreter/LogInterpreter';
 import LogsContext from '../../context/logs/logsContext';
 import DbContext from '../../context/db/dbContext';

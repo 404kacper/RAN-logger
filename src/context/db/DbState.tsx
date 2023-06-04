@@ -6,7 +6,7 @@ import IndexedDbStorageManager from '../../utils/manager/IndexedDbManager';
 
 const DbState = (props: any) => {
   const initialState = {
-    indexedDbStorageManager: new IndexedDbStorageManager()
+    indexedDbStorageManager: new IndexedDbStorageManager(),
   };
 
   const [state, dispatch] = useReducer(DbReducer, initialState);

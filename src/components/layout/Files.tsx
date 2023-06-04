@@ -22,11 +22,14 @@ const Files: React.FC<FilesProps> = ({ collapsed }) => {
   }, [logsContext.fileNames]);
 
   return (
-    <Container className='py-2 files' style={{backgroundColor:"rgb(236,236,236"}}>
+    <Container
+      className='py-2 files'
+      style={{ backgroundColor: 'rgb(236,236,236' }}
+    >
       {collapsed ? null : (
         <Fragment>
           <div className='d-flex justify-content-start mb-2'>
-            <FileIcon />
+            <FileIcon width='24' height='24' />
             <h5 className='align-self-center mb-0 mx-2'>Files</h5>
           </div>
           <Dropzone />
@@ -42,7 +45,7 @@ const Files: React.FC<FilesProps> = ({ collapsed }) => {
               {/* Scroll still needs to be stylized -  */}
               <div
                 style={{
-                  height: '30vh',
+                  height: '100%',
                   overflowY: 'auto',
                   overflowX: 'hidden',
                 }}

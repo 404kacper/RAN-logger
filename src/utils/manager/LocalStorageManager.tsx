@@ -1,12 +1,12 @@
 class LogsStorageManager {
-  storagePrefix: string = "samsung-ran-logger-";
+  storagePrefix: string = 'samsung-ran-logger-';
 
   // Helper to retrieve active files from local storage and initialize global state
   retrieveActiveFileFromStorage = (): string => {
     const storageObject = JSON.parse(
-      localStorage.getItem(this.storagePrefix + "activeFile") as string
+      localStorage.getItem(this.storagePrefix + 'activeFile') as string
     );
-    const defaultActiveFileName: string = "";
+    const defaultActiveFileName: string = '';
 
     if (storageObject != null) {
       return storageObject;
@@ -18,9 +18,9 @@ class LogsStorageManager {
   // Helper similar to activeFile retrival
   retrieveSearchedTermFromStorage = (): string => {
     const storageObject = JSON.parse(
-      localStorage.getItem(this.storagePrefix + "searchedTerm") as string
+      localStorage.getItem(this.storagePrefix + 'searchedTerm') as string
     );
-    const defaultSearchedTerm: string = "";
+    const defaultSearchedTerm: string = '';
 
     if (storageObject != null) {
       return storageObject;
@@ -31,14 +31,14 @@ class LogsStorageManager {
 
   replaceActiveFileInStorage = (activeFileName: string) => {
     localStorage.setItem(
-      this.storagePrefix + "activeFile",
+      this.storagePrefix + 'activeFile',
       JSON.stringify(activeFileName)
     );
   };
 
   replaceSearchedTermInStorage = (searchedTermString: string) => {
     localStorage.setItem(
-      this.storagePrefix + "searchedTerm",
+      this.storagePrefix + 'searchedTerm',
       JSON.stringify(searchedTermString)
     );
   };
