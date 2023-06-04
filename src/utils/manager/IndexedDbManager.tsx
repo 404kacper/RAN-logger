@@ -121,6 +121,14 @@ class IndexedDbStorageManager {
     return nonEmptyTableNames;
   }
 
+  async getLogs(fileName: string) {
+    if (!this.tableExists(fileName)) {
+      return [];
+    }
+
+    return await this.db[fileName].toArray();
+  }
+
   async addLog(log: Log, fileName: string) {
     // If there isn't a table for that file - create one
     if (!this.tableExists(fileName)) {

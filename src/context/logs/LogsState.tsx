@@ -4,8 +4,6 @@ import DbContext from '../db/dbContext';
 import LogsReducer from './logsReducer';
 import LocalStorageManager from '../../utils/manager/LocalStorageManager';
 
-import Log from '../../utils/interpreter/Log';
-
 import {
   SET_ACTIVE_FILE,
   SET_SEARCHED_TERM,
@@ -25,7 +23,7 @@ const LogsState = (props: any) => {
   // Check if user wants to remember preferences and fill in state accordingly
   const getInitialState = () => {
     return {
-      logs: new Map<string, Log[]>(),
+      logs: [],
       activeFile: localStorageManager.retrieveActiveFileFromStorage(),
       // searchedTerm: logsStorageManager.retrieveSearchedTermFromStorage(),
       searchedTerm: '',
@@ -96,7 +94,7 @@ const LogsState = (props: any) => {
 
   const addError = (errorMessage: string) => {
     // Simple implementation right now - store error message and remove it by that error message
-    // Only isses is when there will be two errors with same message in context - but for now that's not the priority
+    // Only issue is when there will be two errors with same message in context - but for now that's not the priority
     // If above happens both errors with same messages will be cleaned
     dispatch({
       type: ADD_ERROR,
