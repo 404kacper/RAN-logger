@@ -1,6 +1,9 @@
-export const SET_LOGS = "SET_LOGS";
-export const REMOVE_LOG = "REMOVE_LOG";
-export const ADD_LOG = "ADD_LOG";
-export const SET_ACTIVE_FILE = "SET_ACTIVE_FILE";
-export const SET_REMEMBER_PREFERENCES = "SET_REMEMBER_PREFERENCES";
-export const SET_SEARCHED_TERM = "SET_SEARCHED_TERM";
+export const SET_ACTIVE_FILE = 'SET_ACTIVE_FILE';
+export const SET_ERROR = 'SET_ERROR';
+export const SET_SEARCHED_TERM = 'SET_SEARCHED_TERM';
+export const SET_DB_READY = 'SET_DB_READY';
+export const SET_FILE_NAMES = 'SET_FILE_NAMES';
+export const ADD_FILE_NAME = 'ADD_FILE_NAME';
+export const DELETE_FILE_NAME = 'DELETE_FILE_NAME';
+export const ADD_ERROR = 'ADD_ERROR';
+export const DELETE_ERROR = 'DELETE_ERROR';

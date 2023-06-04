@@ -1,76 +1,86 @@
-import { useReducer } from "react";
-import LogsContext from "./logsContext";
-import LogsReducer from "./logsReducer";
-
-import Log from "../../utils/interpreter/Log";
-import LogsStorageManager from "../../utils/manager/LogsStorageManager";
+import { useReducer, useEffect, useContext } from 'react';
+import LogsContext from './logsContext';
+import DbContext from '../db/dbContext';
+import LogsReducer from './logsReducer';
+import LocalStorageManager from '../../utils/manager/LocalStorageManager';
 
 import {
-  SET_LOGS,
-  REMOVE_LOG,
-  ADD_LOG,
   SET_ACTIVE_FILE,
-  SET_REMEMBER_PREFERENCES,
   SET_SEARCHED_TERM,
-} from "../types";
+  SET_DB_READY,
+  SET_FILE_NAMES,
+  ADD_FILE_NAME,
+  DELETE_FILE_NAME,
+  ADD_ERROR,
+  DELETE_ERROR,
+} from '../types';
 
 const LogsState = (props: any) => {
-  const logsStorageManager = new LogsStorageManager();
+  // Context for db instance - it's purpose is that when LogsState re-renders new instance of IndexedDbManager isn't created
+  const dbContext = useContext(DbContext);
+  const localStorageManager = new LocalStorageManager();
 
   // Check if user wants to remember preferences and fill in state accordingly
   const getInitialState = () => {
-    const preferencesFromStorage =
-      logsStorageManager.retrievePreferencesFromStorage();
-
-    if (!preferencesFromStorage) {
-      logsStorageManager.replaceLogsInStorage(new Map<string, Log[]>());
-      logsStorageManager.replaceActiveFileInStorage("");
-      logsStorageManager.replaceSearchedTermInStorage("");
-    }
-
-    return preferencesFromStorage
-      ? {
-          logs: logsStorageManager.retrieveLogsFromStorage(),
-          activeFile: logsStorageManager.retrieveActiveFileFromStorage(),
-          rememberPreferences: preferencesFromStorage,
-          searchedTerm: logsStorageManager.retrieveSearchedTermFromStorage(),
-        }
-      : {
-          logs: new Map<string, Log[]>(),
-          activeFile: "",
-          rememberPreferences: false,
-          searchedTerm: "",
-        };
+    return {
+      logs: [],
+      activeFile: localStorageManager.retrieveActiveFileFromStorage(),
+      // searchedTerm: logsStorageManager.retrieveSearchedTermFromStorage(),
+      searchedTerm: '',
+      dbIsReady: false,
+      fileNames: [],
+      errors: [],
+    };
   };
 
   const [state, dispatch] = useReducer(LogsReducer, getInitialState());
 
-  // Used on App component initialization - dispatches reducer to update logs state with appropriate data
-  const setStoredLogs = (logsMap: Map<string, Log[]>) => {
-    dispatch({
-      type: SET_LOGS,
-      payload: logsMap,
-    });
-  };
+  // Hook that checks whether dbManager constructor is done initializing - needs to be pooled every x ms because isReady belongs to class and not DbState - the only argument of hook can be the manager instance
+  useEffect(() => {
+    // Poll the readiness status of IndexedDB every 100ms.
+    const intervalId = setInterval(() => {
+      if (dbContext.indexedDbStorageManager.getIsReady()) {
+        dispatch({
+          type: SET_DB_READY,
+          payload: true,
+        });
+        // Stop polling once the database is ready.
+        clearInterval(intervalId);
+      }
+    }, 100);
+  }, [dbContext.indexedDbStorageManager]);
 
-  // Used on Files component while delete button is clicked
-  const removeStoredLog = (logName: string) => {
-    // Needs a promise since state dispatches are asynchronous
-    return new Promise<void>((resolve) => {
-      dispatch({
-        type: REMOVE_LOG,
-        payload: logName,
-      });
-      resolve();
-    });
-  };
+  // Hook that runs after db is done initialising and logsState has dbIsReady set to true - sets file names (on initial run with right conditions) to whats stored in indexedDB
+  useEffect(() => {
+    if (state.dbIsReady) {
+      // getAllNonEmptyTableNames is asynchronous so in order to await in hook immediately invoked async function needs to be called
+      (async () => {
+        const fetchedTableNames =
+          await dbContext.indexedDbStorageManager.getAllNonEmptyTableNames();
+        dispatch({
+          type: SET_FILE_NAMES,
+          payload: fetchedTableNames,
+        });
+      })();
+    }
+  }, [state.dbIsReady]);
 
-  // Used on Files component while delete button is clicked
-  const addStoredLog = (logName: string, logsArray: Log[]) => {
+  // Used on Files component while dropping files
+  const addedLogToDb = (fileNames: string[]) => {
+    // stopped here implement it in files component on file dropped
     dispatch({
-      type: ADD_LOG,
+      type: ADD_FILE_NAME,
       // Payload is array with 1st element as map key and 2nd element as value of that key
-      payload: [logName, logsArray],
+      payload: fileNames,
+    });
+  };
+
+  // Used on Files component while delete button is clicked
+  const removedLogFromDb = (logName: string) => {
+    // stopped here implement it in files component on file dropped
+    dispatch({
+      type: DELETE_FILE_NAME,
+      payload: logName,
     });
   };
 
@@ -82,12 +92,21 @@ const LogsState = (props: any) => {
     });
   };
 
-  // Used on FilesElement to set active log for other components
-  const setPreferences = (rememberPreferences: boolean) => {
+  const addError = (errorMessage: string) => {
+    // Simple implementation right now - store error message and remove it by that error message
+    // Only issue is when there will be two errors with same message in context - but for now that's not the priority
+    // If above happens both errors with same messages will be cleaned
     dispatch({
-      type: SET_REMEMBER_PREFERENCES,
-      payload: rememberPreferences,
+      type: ADD_ERROR,
+      payload: errorMessage,
     });
+    // Clean added error after 4 seconds
+    setTimeout(() => {
+      dispatch({
+        type: DELETE_ERROR,
+        payload: errorMessage,
+      });
+    }, 4000);
   };
 
   // Used on FilesElement to set active log for other components
@@ -103,15 +122,16 @@ const LogsState = (props: any) => {
       value={{
         logs: state.logs,
         activeFile: state.activeFile,
-        rememberPreferences: state.rememberPreferences,
         searchedTerm: state.searchedTerm,
-        setStoredLogs,
-        removeStoredLog,
-        addStoredLog,
+        dbIsReady: state.dbIsReady,
+        fileNames: state.fileNames,
+        errors: state.errors,
+        localStorageManager,
+        addedLogToDb,
+        removedLogFromDb,
         setActiveFile,
-        setPreferences,
         setSearchedTerm,
-        logsStorageManager
+        addError,
       }}
     >
       {props.children}

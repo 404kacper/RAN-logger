@@ -1,5 +1,5 @@
-import { State } from "../logs/interfaces/StateInterface";
-import { Action } from "../logs/interfaces/ActionInterface";
+import { State } from './interfaces/StateInterface';
+import { Action } from './interfaces/ActionInterface';
 
 const dbReducer = (state: State, action: Action) => {
   // Used to update logs state everytime App component is reloaded

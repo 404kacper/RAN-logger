@@ -1,54 +1,63 @@
 import {
-  SET_LOGS,
-  REMOVE_LOG,
-  ADD_LOG,
   SET_ACTIVE_FILE,
-  SET_REMEMBER_PREFERENCES,
   SET_SEARCHED_TERM,
-} from "../types";
+  SET_DB_READY,
+  SET_FILE_NAMES,
+  ADD_FILE_NAME,
+  DELETE_FILE_NAME,
+  ADD_ERROR,
+  DELETE_ERROR,
+} from '../types';
 
-import { State } from "./interfaces/StateInterface";
-import { Action } from "./interfaces/ActionInterface";
+import { State } from './interfaces/StateInterface';
+import { Action } from './interfaces/ActionInterface';
 
 const logsReducer = (state: State, action: Action) => {
   // Used to update logs state everytime App component is reloaded
   switch (action.type) {
-    case SET_LOGS:
-      return {
-        // Copy state
-        ...state,
-        // Assign new payload - update state
-        logs: action.payload,
-      };
-    case REMOVE_LOG:
-      return {
-        ...state,
-        logs: new Map(
-          Array.from(state.logs).filter(([key]) => key !== action.payload)
-        ),
-      };
-    case ADD_LOG:
-      return {
-        ...state,
-        logs: new Map([
-          ...Array.from(state.logs),
-          [action.payload[0], action.payload[1]],
-        ]),
-      };
     case SET_ACTIVE_FILE:
       return {
         ...state,
         activeFile: action.payload,
       };
-    case SET_REMEMBER_PREFERENCES:
-      return {
-        ...state,
-        rememberPreferences: action.payload,
-      };
     case SET_SEARCHED_TERM:
       return {
         ...state,
         searchedTerm: action.payload,
+      };
+    case SET_DB_READY:
+      return {
+        ...state,
+        dbIsReady: action.payload,
+      };
+    case SET_FILE_NAMES:
+      return {
+        ...state,
+        fileNames: action.payload,
+      };
+    case ADD_FILE_NAME:
+      return {
+        ...state,
+        fileNames: [...state.fileNames, action.payload],
+      };
+    case DELETE_FILE_NAME:
+      return {
+        ...state,
+        fileNames: state.fileNames.filter(
+          (fileName) => fileName !== action.payload
+        ),
+      };
+    case ADD_ERROR:
+      return {
+        ...state,
+        errors: [...state.errors, action.payload],
+      };
+    case DELETE_ERROR:
+      return {
+        ...state,
+        errors: state.errors.filter(
+          (storedErrorMessage) => storedErrorMessage !== action.payload
+        ),
       };
     default:
       return state;
