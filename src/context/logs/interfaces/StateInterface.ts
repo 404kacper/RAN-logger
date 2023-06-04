@@ -1,9 +1,11 @@
-import Log from '../../../utils/interpreter/Log'; 
+import Log from '../../../utils/interpreter/Log';
 
 // The structure of state - values being passed between components
 export interface State {
-    logs: Map <string, Log[]>;
-    activeFile: string;
-    rememberPreferences: boolean;
-    searchedTerm: string;
-  }
+  logs: Array<string>;
+  activeFile: string;
+  searchedTerm: string;
+  dbIsReady: boolean;
+  fileNames: string[];
+  errors: string[];
+}

@@ -24,6 +24,7 @@ const Home = () => {
           <NavbarCentre />
         </Col>
       </Row>
+
       <Row style={{ height: "95vh" }} className="align-items-top">
         <Col
           lg={"auto"}
