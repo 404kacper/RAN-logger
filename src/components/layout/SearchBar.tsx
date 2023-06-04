@@ -5,21 +5,20 @@ import LogsContext from "../../context/logs/logsContext";
 
 const SearchBar: React.FC = () => {
   const logsContext = useContext(LogsContext);
-  const [searchTerm, setSearchTerm] = useState(logsContext.searchedTerm);
+
+  const { localStorageManager, searchedTerm } = logsContext;
+
+  const [userQuery, setUserQuery] = useState(searchedTerm);
 
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (logsContext.rememberPreferences) {
-      logsContext.logsStorageManager.replaceSearchedTermInStorage(searchTerm);
-    } else {
-      logsContext.logsStorageManager.replaceSearchedTermInStorage("");
-    }
+    localStorageManager.replaceSearchedTermInStorage(userQuery);
 
-    logsContext.setSearchedTerm(searchTerm);
+    logsContext.setSearchedTerm(userQuery);
+    event.preventDefault();
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
+    setUserQuery(event.target.value);
   };
 
   return (
@@ -27,7 +26,7 @@ const SearchBar: React.FC = () => {
       <Form.Control
         type="text"
         placeholder="Search"
-        value={searchTerm}
+        value={userQuery}
         onChange={handleInputChange}
       />
       <Button variant="primary" type="submit" className="ml-2">

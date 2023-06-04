@@ -7,7 +7,7 @@ const LogsList: React.FC = () => {
   const logsContext = useContext(LogsContext);
   const dbContext = useContext(DbContext);
 
-  const { activeFile, dbIsReady } = logsContext;
+  const { activeFile, dbIsReady, searchedTerm } = logsContext;
   const { indexedDbStorageManager } = dbContext;
 
   // Check if active file exists in the map
@@ -20,17 +20,16 @@ const LogsList: React.FC = () => {
       // Async function that's called immediately inside useEffect hook - to await query from indexedDb
       const fetchLogs = async () => {
         // Here loading state can be set to true
-
         const logsFromDb = await indexedDbStorageManager.getLogs(activeFile);
         // Set local state to trigger re-render of LogsList component
         setLogs(logsFromDb);
+        // Here loading state can be set to false
       };
 
       // Call above async function
       fetchLogs();
-      // Here loading state can be set to false
     }
-    // dbIsReady since this is the current way of handling asynchronous connection to db
+    // dbIsReady since this is the current way of handling asynchronous connection to db - implication is that there can be multiple renders that can get heavy if logs state will contain a lots of objects
     // this approach is a little different from how fileNames are initialized - due to the fact that logs in this component are local state
   }, [activeFile, dbIsReady]);
 
@@ -63,9 +62,9 @@ const LogsList: React.FC = () => {
   };
 
   const filteredLogs = logs.filter((log: any) => {
-    if (logsContext.searchedTerm !== '') {
+    if (searchedTerm !== '') {
       const joinedValues = Object.values(log).join(' ').toLowerCase();
-      return joinedValues.includes(logsContext.searchedTerm.toLowerCase());
+      return joinedValues.includes(searchedTerm.toLowerCase());
     } else {
       return log;
     }
@@ -79,32 +78,40 @@ const LogsList: React.FC = () => {
       <Table striped bordered hover variant='light'>
         <thead>
           <tr>
-            {Object.keys(logs[0]).map((member, index) => (
-              <th key={index}>{member.toUpperCase()}</th>
-            ))}
+            {/* Map through each key of logs */}
+            {Object.keys(logs[0]).map((member, index) =>
+              // Skip storageId key
+              member !== 'storageId' ? (
+                <th key={index}>{member.toUpperCase()}</th>
+              ) : null
+            )}
           </tr>
         </thead>
 
         {filteredLogs.length > 0 ? (
           <tbody>
+            {/* Map through logs that are searchable */}
             {filteredLogs.map((log: any, index: number) => (
               <tr key={index}>
-                {Object.keys(log).map((member, index) => (
-                  <td key={index} style={{ height: '5vh' }}>
-                    {highlightMatches(
-                      log[member],
-                      logsContext.searchedTerm,
-                      index
-                    )}
-                  </td>
-                ))}
+                {Object.keys(log).map((member, index) =>
+                  // Do the same as with headers - skip storageId key
+                  member !== 'storageId' ? (
+                    <td key={index} style={{ height: '5vh' }}>
+                      {/* Return highlighted members */}
+                      {highlightMatches(log[member], searchedTerm, index)}
+                    </td>
+                  ) : null
+                )}
               </tr>
             ))}
           </tbody>
         ) : (
           <tbody>
             <tr>
-              <td colSpan={Object.keys(logs[0]).length}>No data available.</td>
+              <td colSpan={Object.keys(logs[0]).length}>
+                No matching data found for query: {searchedTerm}.<br />
+                Please empty search and click search to reset.
+              </td>
             </tr>
           </tbody>
         )}
