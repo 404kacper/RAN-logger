@@ -1,7 +1,7 @@
-import React from "react";
-import { Container } from "react-bootstrap";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import {faCaretRight, faCaretLeft} from "@fortawesome/free-solid-svg-icons"
+import React from 'react';
+import { Container } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretRight, faCaretLeft } from '@fortawesome/free-solid-svg-icons';
 
 interface FilterProps {
   collapsed: boolean;
