@@ -14,7 +14,7 @@ const Home = () => {
 
 
   return (
-    <Fragment >
+    <Fragment>
       {/* Initial grid = Row 1 - 1 Col | Row 1 - 2 Col - second row is further divided */}
       <Row style={{ height: "8vh"}}>
         <Col

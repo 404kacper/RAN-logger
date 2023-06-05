@@ -10,10 +10,10 @@ interface FilterProps {
 
 const Filters: React.FC<FilterProps> = ({collapsed, collapsedChanger}) => {
     return (
-      <Container className={`py-2 sidebar ${collapsed ? "collapsed" : ""}`} style={{height:"5.4vh", backgroundColor: "black", borderTopRightRadius: "4px", borderBottomRightRadius:"4px"}} >
+      <Container className={`py-2 sidebar ${collapsed ? "collapsed" : ""}`} style={{height:"5.4vh", backgroundColor: "black", borderTopRightRadius: "4px", borderBottomRightRadius:"4px"}} onClick={() => collapsedChanger(!collapsed)} >
         <div className="d-flex justify-content-start">
-          {collapsed ? ( <FontAwesomeIcon className="sidebar_expand_icon" icon={faCaretRight} onClick={() => collapsedChanger(!collapsed)} style={{marginLeft: 'auto', marginTop: '1rem', color:"white"}}/>) 
-            : (<FontAwesomeIcon  className="sidebar_expand_icon" icon={faCaretLeft} onClick={() => collapsedChanger(!collapsed)} style={{marginLeft: 'auto', marginTop: '1rem', color:"white"}}/>)}
+          {collapsed ? ( <FontAwesomeIcon className="sidebar_expand_icon" icon={faCaretRight}  style={{marginLeft: 'auto', marginTop: '1rem', color:"white"}}/>) 
+            : (<FontAwesomeIcon  className="sidebar_expand_icon" icon={faCaretLeft} style={{marginLeft: 'auto', marginTop: '1rem', color:"white"}}/>)}
         </div>
       </Container>
     );
