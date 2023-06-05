@@ -33,7 +33,7 @@ const Home = () => {
           {/* Also needs to be secured only to accept specific format of files(potential errors) - .txt for example */}
           <Files collapsed={collapsed} />
         </Col>
-        <Col  lg={"auto"} style={{ width: "0.8vw", backgroundColor: "rgb(248,248,248)" }} className="p-0">
+        <Col  lg={"auto"} style={{backgroundColor: "rgb(248,248,248)" }} className="p-0">
             <Filters collapsed={collapsed} collapsedChanger={setCollapsed}/>
         </Col>
         <Col style={{ backgroundColor: "rgb(248,248,248)" }}>
