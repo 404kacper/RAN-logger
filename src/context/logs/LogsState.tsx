@@ -25,7 +25,6 @@ const LogsState = (props: any) => {
     return {
       logs: [],
       activeFile: localStorageManager.retrieveActiveFileFromStorage(),
-      // searchedTerm: logsStorageManager.retrieveSearchedTermFromStorage(),
       searchedTerm: '',
       dbIsReady: false,
       fileNames: [],

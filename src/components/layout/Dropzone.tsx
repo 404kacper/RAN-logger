@@ -4,6 +4,7 @@ import LogInterpreter from '../../utils/interpreter/LogInterpreter';
 import LogsContext from '../../context/logs/logsContext';
 import DbContext from '../../context/db/dbContext';
 import Log from '../../utils/interpreter/Log';
+import Archieve from './Archieve';
 
 import {
   useDropzone,
@@ -104,6 +105,7 @@ const Dropzone: React.FC = () => {
           <h6 className='text-center'>Drag and drop file or click to upload</h6>
         </div>
       </div>
+      <Archieve/>
     </Fragment>
   );
 };
