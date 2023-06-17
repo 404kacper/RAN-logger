@@ -1,89 +1,117 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import TreeView from '@mui/lab/TreeView';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import TreeItem from '@mui/lab/TreeItem';
 import JSZip from 'jszip';
-import { FaFolder, FaRegFolder, FaFile } from 'react-icons/fa';
-import { IconType } from 'react-icons';
-import ReactTree from '@naisutech/react-tree';
+import { useState, useEffect } from 'react';
 
-interface Props {}
-
-interface FileNode {
-  label: string;
-  children: FileNode[];
+interface RenderTree {
+  id: string;
+  name: string;
+  children?: RenderTree[];
 }
 
-const Archive: React.FC<Props> = () => {
-  const [files, setFiles] = useState<FileNode[]>([]);
+interface TreeNode {
+  id: string;
+  parentId: string | null;
+  label: string;
+  type: string;
+  items: TreeNode[];
+}
+
+const Archive: React.FC = () => {
+  const [nodes, setNodes] = useState<TreeNode[]>([]);
 
   useEffect(() => {
-    console.log(files)
-  }, files)
+    console.log(`Json structure:`);
+    console.log(nodes);
+  }, [nodes]);
+
+  // Convert the nodes data to RenderTree data
+  const convertToRenderTreeData = (nodes: TreeNode[]): RenderTree[] => {
+    return nodes.map((node) => ({
+      id: node.id,
+      name: node.label,
+      children:
+        node.items.length > 0 ? convertToRenderTreeData(node.items) : undefined,
+    }));
+  };
+
+  const renderTree = (nodes: RenderTree): JSX.Element => {
+    return (
+      <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name}>
+        {Array.isArray(nodes.children)
+          ? nodes.children.map((node) => renderTree(node))
+          : null}
+      </TreeItem>
+    );
+  };
 
   const handleArchiveUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
   ): Promise<void> => {
     const archive: JSZip = await JSZip.loadAsync(event.target.files![0]);
-    const folders: Record<string, string[]> = {};
+    let nodeIdCounter = 1;
 
-    // play around with this to figure out how to extract folder structure into json 
-    console.log(archive);
-    // archive.forEach((relativePath: string, file: JSZip.JSZipObject) => {
-    //   if (!file.dir) {
-    //     const path: string[] = relativePath.split('/').slice(0, -1);
-    //     const folderName: string = path[0];
-    //     const fileName: string = path[1];
+    // Directory map to track parent directories.
+    const directoryMap: { [key: string]: TreeNode } = {};
 
-    //     if (!folders[folderName]) {
-    //       folders[folderName] = [];
-    //     }
+    let newNodes: TreeNode[] = [];
 
-    //     folders[folderName].push(fileName);
-    //   }
-    // });
+    archive.forEach((relativePath: string, file: JSZip.JSZipObject) => {
+      // Don't include empty path as it would produce an empty node
+      const path = relativePath.split('/').filter((part) => part !== '');
+      let currentParent: TreeNode | null = null;
 
-    // const fileNodes: FileNode[] = Object.entries(folders).map(
-    //   ([folderName, files]) => ({
-    //     label: folderName,
-    //     children: files.map((fileName) => ({
-    //       label: fileName,
-    //       children: [],
-    //     })),
-    //   })
-    // );
+      for (let index = 0; index < path.length; index++) {
+        const part = path[index];
+        const nodeId = (nodeIdCounter++).toString();
+        const directoryKey = path.slice(0, index + 1).join('/');
 
-    // setFiles(fileNodes);
-  };
+        // Check if we're on the actual file path
+        if (!directoryMap[directoryKey]) {
+          const nodeType =
+            file.dir || index !== path.length - 1 ? 'folder' : 'file';
+          const node: TreeNode = {
+            id: nodeId,
+            parentId: currentParent ? currentParent.id : null,
+            label: part,
+            type: nodeType,
+            items: [],
+          };
 
-  const getIcon = (type: string): React.ReactNode => {
-    let Icon: IconType;
+          directoryMap[directoryKey] = node;
 
-    switch (type) {
-      case 'folder':
-        Icon = FaFolder;
-        break;
-      case 'file':
-        Icon = FaFile;
-        break;
-      default:
-        Icon = FaRegFolder;
-        break;
-    }
+          if (currentParent) {
+            currentParent.items.push(node);
+          } else {
+            newNodes.push(node);
+          }
+        }
 
-    return <Icon />;
+        currentParent = directoryMap[directoryKey];
+      }
+    });
+
+    setNodes(newNodes);
   };
 
   return (
     <>
       <input type='file' onChange={handleArchiveUpload} />
-      {/* {files.length > 0 && (
-        <ReactTree
-          nodes={files}
-          RenderItem={({ item }) => (
-            <div>
-              {getIcon(item.children.length ? 'folder' : 'file')} {item.label}
-            </div>
-          )}
-        />
-      )} */}
+      {nodes.length > 0 ? (
+        <TreeView
+          aria-label='archive-tree'
+          defaultCollapseIcon={<ExpandMoreIcon />}
+          defaultExpandIcon={<ChevronRightIcon />}
+          sx={{ height: 110, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}
+        >
+          {convertToRenderTreeData(nodes).map((node) => renderTree(node))}
+        </TreeView>
+      ) : (
+        <div>Loading...</div>
+      )}
     </>
   );
 };

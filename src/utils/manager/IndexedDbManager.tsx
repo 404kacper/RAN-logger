@@ -155,7 +155,7 @@ class IndexedDbStorageManager {
     if (this.tableExists(fileName)) {
       // Delete all records in the table with the given fileName
       await this.db[fileName].clear();
-      // The table itself is not removed - different method of this class is used in LogsState to fetch non-empty tables
+      // The table itself is not removed - different method of this class are used in LogsState to fetch non-empty tables
       // To remove the table there would be need to update version and keep dummy table when deleting last table - to keep schema/store persistance and maintain correct version
       // And that solution takes a while longer to implement (keep in mind initialization in constructor and all the errors that could occur)
     }

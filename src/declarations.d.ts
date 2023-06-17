@@ -3,4 +3,4 @@ declare module '*.png' {
   export default value;
 }
 
-declare module 'react-tree-view';
+declare module '@naisutech/react-tree';
