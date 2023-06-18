@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 
 import untar from 'js-untar';
 import JSZip from 'jszip';
+import pako from 'pako';
 
 import TreeView from '@mui/lab/TreeView';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -25,7 +26,7 @@ interface TreeNode {
   label: string;
   type: string;
   items: TreeNode[];
-  file?: JSZip.JSZipObject;
+  file?: JSZip | JSZip.JSZipObject;
 }
 
 const Archive: React.FC = () => {
@@ -35,8 +36,8 @@ const Archive: React.FC = () => {
   );
 
   useEffect(() => {
-    console.log(selectedFile);
-  }, [selectedFile])
+    // console.log(selectedFile);
+  }, [selectedFile]);
 
   // Convert the nodes data to RenderTree data
   const convertToRenderTreeData = (nodes: TreeNode[]): RenderTree[] => {
@@ -65,11 +66,14 @@ const Archive: React.FC = () => {
       </TreeItem>
     );
   };
-
-  const handleSelect = (node: RenderTree) => {
+  const handleSelect = async (node: RenderTree) => {
     const selectedNode = findNode(node.id);
-    if (selectedNode && selectedNode.file) {
-      setSelectedFile(selectedNode.file);
+    const file = selectedNode?.file;
+
+    if (file && 'async' in file) {
+      const fileContents = await file.async('uint8array');
+      const fileText = new TextDecoder().decode(fileContents);
+      console.log(fileText); // Now it should print the text contents of the file
     }
   };
 
@@ -113,8 +117,7 @@ const Archive: React.FC = () => {
 
     let newNodes: TreeNode[] = [];
 
-    archive.forEach((relativePath: string, file: JSZip.JSZipObject) => {
-      // Don't include empty path as it would produce an empty node
+    for (const [relativePath, file] of Object.entries(archive.files)) {
       const path = relativePath.split('/').filter((part) => part !== '');
       let currentParent: TreeNode | null = null;
 
@@ -140,6 +143,61 @@ const Archive: React.FC = () => {
             file: !isDirectory ? file : undefined,
           };
 
+          if (nodeType === 'file.gz') {
+            if (node.file && 'async' in node.file) {
+              const contentUint8 = await node.file.async('uint8array');
+
+              const gunzipped = pako.ungzip(contentUint8);
+
+              const filesFromGz = await untar(gunzipped.buffer);
+
+              // Interpretation of individual files after decompression and untaring
+              // Assumed format is a text file
+              for (const fileFromGz of filesFromGz) {
+                const nodeId = (nodeIdCounter++).toString();
+                const fileName = fileFromGz.name.endsWith('/')
+                  ? fileFromGz.name.slice(0, -1)
+                  : fileFromGz.name; // Trim the ending slash if any
+                const fileType = fileName.split('.').pop();
+                const isDirectory = fileFromGz.name.endsWith('/');
+
+                // Handle directory entry and create appropriate node
+                if (isDirectory) {
+                  const dirNode: TreeNode = {
+                    id: nodeId,
+                    parentId: node.id,
+                    label: fileName,
+                    type: 'folder',
+                    items: [],
+                  };
+                  node.items.push(dirNode);
+                  continue; // No need to create zip object for directories, move on to the next entry
+                }
+
+                if (fileType === 'log' || isDirectory) {
+                  const zipObject = new JSZip().file(
+                    fileName,
+                    fileFromGz.buffer
+                  );
+                  const childNode: TreeNode = {
+                    id: nodeId,
+                    parentId: node.id,
+                    label: fileName,
+                    type: `file.${fileType}`,
+                    items: [],
+                    // Convert fileFromGz.buffer (an ArrayBuffer) to a JSZip.JSZipObject
+                    file: zipObject,
+                  };
+                  node.items.push(childNode);
+                }
+              }
+            } else {
+              console.error(
+                "File is not defined or doesn't have an 'async' method"
+              );
+            }
+          }
+
           directoryMap[directoryKey] = node;
 
           if (currentParent) {
@@ -151,9 +209,9 @@ const Archive: React.FC = () => {
 
         currentParent = directoryMap[directoryKey];
       }
-    });
+    }
 
-    setNodes(newNodes);
+    setNodes((nodes) => [...nodes, ...newNodes]);
   };
 
   return (
