@@ -118,7 +118,10 @@ const Archive: React.FC = () => {
     let newNodes: TreeNode[] = [];
 
     for (const [relativePath, file] of Object.entries(archive.files)) {
-      const path = relativePath.split('/').filter((part) => part !== '');
+      const path = relativePath
+        .split('/')
+        .filter((part: string) => part !== '');
+
       let currentParent: TreeNode | null = null;
 
       for (let index = 0; index < path.length; index++) {
@@ -147,48 +150,56 @@ const Archive: React.FC = () => {
             if (node.file && 'async' in node.file) {
               const contentUint8 = await node.file.async('uint8array');
 
-              const gunzipped = pako.ungzip(contentUint8);
+              // Decompress the gzipped file
+              const decompressed = pako.inflate(contentUint8);
 
-              const filesFromGz = await untar(gunzipped.buffer);
+              // Untar the decompressed tarball
+              const filesFromGz = await untar(decompressed.buffer);
 
               // Interpretation of individual files after decompression and untaring
               // Assumed format is a text file
+              console.log(`Currently displayed archive: ${node.label}`);
               for (const fileFromGz of filesFromGz) {
-                const nodeId = (nodeIdCounter++).toString();
-                const fileName = fileFromGz.name.endsWith('/')
-                  ? fileFromGz.name.slice(0, -1)
-                  : fileFromGz.name; // Trim the ending slash if any
-                const fileType = fileName.split('.').pop();
-                const isDirectory = fileFromGz.name.endsWith('/');
+                console.log(`Displayed file is: ${fileFromGz.name}`);
+                console.log(fileFromGz);
 
-                // Handle directory entry and create appropriate node
-                if (isDirectory) {
-                  const dirNode: TreeNode = {
-                    id: nodeId,
-                    parentId: node.id,
-                    label: fileName,
-                    type: 'folder',
-                    items: [],
-                  };
-                  node.items.push(dirNode);
-                  continue; // No need to create zip object for directories, move on to the next entry
-                }
+                const filePath = fileFromGz.name
+                  .split('/')
+                  .filter((part: string) => part !== '');
+                let currentParent: TreeNode | null = node; // Start from the gz file node
 
-                if (fileType === 'log' || isDirectory) {
-                  const zipObject = new JSZip().file(
-                    fileName,
-                    fileFromGz.buffer
-                  );
-                  const childNode: TreeNode = {
-                    id: nodeId,
-                    parentId: node.id,
-                    label: fileName,
-                    type: `file.${fileType}`,
-                    items: [],
-                    // Convert fileFromGz.buffer (an ArrayBuffer) to a JSZip.JSZipObject
-                    file: zipObject,
-                  };
-                  node.items.push(childNode);
+                for (let index = 0; index < filePath.length; index++) {
+                  const part = filePath[index];
+                  const nodeId = (nodeIdCounter++).toString();
+                  const directoryKey = `${node.label}/${filePath
+                    .slice(0, index + 1)
+                    .join('/')}`;
+
+                  if (!directoryMap[directoryKey]) {
+                    const isDirectory = index !== filePath.length - 1;
+
+                    const nodeType = isDirectory
+                      ? 'folder'
+                      : `file.${part.split('.').pop()}`;
+
+                    const childNode: TreeNode = {
+                      id: nodeId,
+                      parentId: currentParent ? currentParent.id : null,
+                      label: part,
+                      type: nodeType,
+                      items: [],
+                      // Only non-directory nodes have file attribute
+                      file: !isDirectory
+                        ? new JSZip().file(part, fileFromGz.buffer)
+                        : undefined,
+                    };
+
+                    directoryMap[directoryKey] = childNode;
+                    currentParent.items.push(childNode);
+                    currentParent = childNode;
+                  } else {
+                    currentParent = directoryMap[directoryKey];
+                  }
                 }
               }
             } else {
