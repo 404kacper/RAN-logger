@@ -3,4 +3,7 @@ declare module '*.png' {
   export default value;
 }
 
-declare module '@naisutech/react-tree';
+declare module 'js-untar' {
+  const untar: any;
+  export default untar;
+}
