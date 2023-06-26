@@ -1,0 +1,2 @@
+Archieve:
+    - tar.gz archieves also contain further compressed files with .gz in their directories and they aren't decompressed properly yet

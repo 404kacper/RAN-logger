@@ -23,7 +23,6 @@ const LogsState = (props: any) => {
   // Check if user wants to remember preferences and fill in state accordingly
   const getInitialState = () => {
     return {
-      logs: [],
       activeFile: localStorageManager.retrieveActiveFileFromStorage(),
       searchedTerm: '',
       dbIsReady: false,
@@ -66,7 +65,6 @@ const LogsState = (props: any) => {
 
   // Used on Files component while dropping files
   const addedLogToDb = (fileNames: string[]) => {
-    // stopped here implement it in files component on file dropped
     dispatch({
       type: ADD_FILE_NAME,
       // Payload is array with 1st element as map key and 2nd element as value of that key
@@ -76,7 +74,6 @@ const LogsState = (props: any) => {
 
   // Used on Files component while delete button is clicked
   const removedLogFromDb = (logName: string) => {
-    // stopped here implement it in files component on file dropped
     dispatch({
       type: DELETE_FILE_NAME,
       payload: logName,
@@ -119,7 +116,6 @@ const LogsState = (props: any) => {
   return (
     <LogsContext.Provider
       value={{
-        logs: state.logs,
         activeFile: state.activeFile,
         searchedTerm: state.searchedTerm,
         dbIsReady: state.dbIsReady,

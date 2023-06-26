@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useContext } from 'react';
 
 import untar from 'js-untar';
-import JSZip from 'jszip';
+import JSZip, { JSZipObject } from 'jszip';
 import pako from 'pako';
 
 import TreeView from '@mui/lab/TreeView';
@@ -12,6 +12,11 @@ import TreeItem from '@mui/lab/TreeItem';
 import FolderIcon from '@mui/icons-material/FolderRounded';
 import DescriptionIcon from '@mui/icons-material/DescriptionRounded';
 import ArchiveIcon from '@mui/icons-material/ArchiveRounded';
+import HelpIcon from '@mui/icons-material/HelpOutline';
+
+import LogsContext from '../../context/logs/logsContext';
+import DbContext from '../../context/db/dbContext';
+import LogInterpreter from '../../utils/interpreter/LogInterpreter';
 
 interface RenderTree {
   id: string;
@@ -26,18 +31,16 @@ interface TreeNode {
   label: string;
   type: string;
   items: TreeNode[];
-  file?: JSZip | JSZip.JSZipObject;
+  file?: JSZip | JSZipObject;
 }
 
 const Archive: React.FC = () => {
-  const [nodes, setNodes] = useState<TreeNode[]>([]);
-  const [selectedFile, setSelectedFile] = useState<JSZip.JSZipObject | null>(
-    null
-  );
+  const logsContext = useContext(LogsContext);
+  const dbContext = useContext(DbContext);
+  const { indexedDbStorageManager } = dbContext;
+  const { activeFile, localStorageManager } = logsContext;
 
-  useEffect(() => {
-    // console.log(selectedFile);
-  }, [selectedFile]);
+  const [nodes, setNodes] = useState<TreeNode[]>([]);
 
   // Convert the nodes data to RenderTree data
   const convertToRenderTreeData = (nodes: TreeNode[]): RenderTree[] => {
@@ -56,7 +59,6 @@ const Archive: React.FC = () => {
         key={nodes.id}
         nodeId={nodes.id}
         label={nodes.name}
-        // Add an icon based on the type of the node
         icon={getIconForType(nodes.type)}
         onClick={() => handleSelect(nodes)}
       >
@@ -66,14 +68,52 @@ const Archive: React.FC = () => {
       </TreeItem>
     );
   };
+
   const handleSelect = async (node: RenderTree) => {
     const selectedNode = findNode(node.id);
-    const file = selectedNode?.file;
+    const fileFromNode = selectedNode?.file;
 
-    if (file && 'async' in file) {
-      const fileContents = await file.async('uint8array');
-      const fileText = new TextDecoder().decode(fileContents);
-      console.log(fileText); // Now it should print the text contents of the file
+    // Naive way of selecting file for display
+    // Should be state with appropriate file object so that there is more info in state to work with
+    if (selectedNode?.type === 'file.log') {
+      // Files from .zip will be JSZipObject instances
+      if (fileFromNode && 'async' in fileFromNode) {
+        const fileContents = await fileFromNode.async('string');
+        const parsedLogsArray = new LogInterpreter(fileContents).parseLogs();
+
+        if (!indexedDbStorageManager.tableExists(selectedNode.label)) {
+          await indexedDbStorageManager.addLogs(
+            parsedLogsArray,
+            selectedNode.label
+          );
+        }
+
+        logsContext.setActiveFile(selectedNode.label);
+        localStorageManager.replaceActiveFileInStorage(selectedNode.label);
+        console.log(parsedLogsArray);
+      }
+
+      // Files from tar.gz will be wrapped in JSZip
+      // They must be handled differently
+      if (fileFromNode instanceof JSZip) {
+        const fileFromTarGz = fileFromNode.files[selectedNode.label];
+
+        if (fileFromTarGz && 'async' in fileFromTarGz) {
+          const fileContents = await fileFromTarGz.async('string');
+          const parsedLogsArray = new LogInterpreter(fileContents).parseLogs();
+
+          if (!indexedDbStorageManager.tableExists(selectedNode.label)) {
+            await indexedDbStorageManager.addLogs(
+              parsedLogsArray,
+              selectedNode.label
+            );
+          }
+
+          logsContext.setActiveFile(selectedNode.label);
+          localStorageManager.replaceActiveFileInStorage(selectedNode.label);
+          console.log(parsedLogsArray);
+        }
+      }
     }
   };
 
@@ -102,6 +142,7 @@ const Archive: React.FC = () => {
       case 'file.log':
         return <DescriptionIcon />;
       default:
+        // return <HelpIcon />;
         break;
     }
   };
@@ -117,6 +158,7 @@ const Archive: React.FC = () => {
 
     let newNodes: TreeNode[] = [];
 
+    // Loop for traversing zip archieve
     for (const [relativePath, file] of Object.entries(archive.files)) {
       const path = relativePath
         .split('/')
@@ -133,10 +175,14 @@ const Archive: React.FC = () => {
         if (!directoryMap[directoryKey]) {
           const isDirectory = file.dir || index !== path.length - 1;
 
+          // Earlier, in the node construction, instead of 'file.gz', we could set it as 'file.{extension}', like:
           const nodeType = isDirectory
             ? 'folder'
+            : file.dir
+            ? `file.gz`
             : `file.${part.split('.').pop()}`;
 
+          // Start building node for tree view
           const node: TreeNode = {
             id: nodeId,
             parentId: currentParent ? currentParent.id : null,
@@ -146,6 +192,7 @@ const Archive: React.FC = () => {
             file: !isDirectory ? file : undefined,
           };
 
+          // Traversing tar.gz archieve
           if (nodeType === 'file.gz') {
             if (node.file && 'async' in node.file) {
               const contentUint8 = await node.file.async('uint8array');
@@ -156,17 +203,18 @@ const Archive: React.FC = () => {
               // Untar the decompressed tarball
               const filesFromGz = await untar(decompressed.buffer);
 
+              // console.log(`Currently displayed archive: ${node.label}`);
               // Interpretation of individual files after decompression and untaring
               // Assumed format is a text file
-              console.log(`Currently displayed archive: ${node.label}`);
               for (const fileFromGz of filesFromGz) {
-                console.log(`Displayed file is: ${fileFromGz.name}`);
-                console.log(fileFromGz);
+                // console.log(`Displayed file is: ${fileFromGz.name}`);
+                // console.log(fileFromGz);
 
                 const filePath = fileFromGz.name
                   .split('/')
                   .filter((part: string) => part !== '');
-                let currentParent: TreeNode | null = node; // Start from the gz file node
+                // Start from with the archieve node
+                let currentParent: TreeNode | null = node;
 
                 for (let index = 0; index < filePath.length; index++) {
                   const part = filePath[index];
